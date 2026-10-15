@@ -21,7 +21,7 @@
   web 拉回来（POSIX 用 start_new_session, Windows 用 DETACHED_PROCESS）。
 
 ★ Windows 包也认（2026-10-12 接上）：PG 走随包/官方那份 pg_ctl、向量走随包 llama-server
-  （都复用 web/启动.py 的现成实现）, 没有本地主模型的机器不监控 8790。
+  （都复用 web/start.py 的现成实现）, 没有本地主模型的机器不监控 8790。
 """
 from __future__ import annotations
 
@@ -44,10 +44,10 @@ VENV_PY = 根 / ".venv" / "bin" / "python"
 
 
 def _借启动() -> Any:
-    """把 web/启动.py 借来用 —— 平台的活都在它那儿（PG 走 pg_ctl、向量走随包 llama）。"""
+    """把 web/start.py 借来用 —— 平台的活都在它那儿（PG 走 pg_ctl、向量走随包 llama）。"""
     if str(根) not in sys.path:
         sys.path.insert(0, str(根))
-    from web import 启动 as _模  # noqa: PLC0415
+    from web import start as _模  # noqa: PLC0415
 
     return _模
 

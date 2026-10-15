@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""框架接缝测试 —— 主 agent 那一侧(定时.py)怎么用 skill/timer.
+"""框架接缝测试 —— 主 agent 那一侧(timers.py)怎么用 skill/timer.
 
 跑法: .venv/bin/python tests/test_timer_seam.py
 
-跟 skill/timer/tests/验定时.py 的分工: 那个验引擎, 这个验**接缝** ——
+跟 skill/timer/tests/test_timer.py 的分工: 那个验引擎, 这个验**接缝** ——
 登记走真子进程(main.py register), 交付走 取待办() / 等阻塞(), 全在沙盒里。
 """
 
@@ -26,7 +26,7 @@ os.environ["COLLAPLEX_TIMER_CONFIG"] = str(沙盒 / "timer.json")
 os.environ["COLLAPLEX_TIMER_SPEED"] = "60"          # 假时钟 60 倍: 60 秒 = 1 秒
 
 sys.path.insert(0, str(根))
-import 定时                                              # noqa: E402 - 环境必须先设好
+import timers as 定时                                              # noqa: E402 - 环境必须先设好
 
 (沙盒 / "timer.json").write_text(json.dumps({
     "上限分钟_阻塞": 180, "最多条数": 20, "空闲退出秒": 1, "轮询秒": 0.05,

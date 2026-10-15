@@ -44,9 +44,9 @@ for 搜索路径 in (str(根目录), str(本目录)):
         sys.path.insert(0, 搜索路径)
 
 import sub_agent  # noqa: E402  - 路径要先塞好
-import 定时  # noqa: E402  - 根目录那个接缝件(重挂/取待办/等阻塞)
+import timers as 定时  # noqa: E402  - 根目录那个接缝件(重挂/取待办/等阻塞)
 
-from web import 启动, bridge  # noqa: E402  - 同上（启动 = 启动页那条链: 拉模型/自检/看门狗）
+from web import start as 启动, bridge  # noqa: E402  - 同上（启动 = 启动页那条链: 拉模型/自检/看门狗）
 
 静态目录 = 本目录 / "static"
 
@@ -355,7 +355,7 @@ class 处理(BaseHTTPRequestHandler):
                 self.送JSON({"词": self.取文字("词"), "命中": [], "说明": f"搜索失败: {错}"})
             return
         if 路径 == "/启动":          # 启动页; 页面自己再调下面这几个接口
-            路径 = "/启动.html"
+            路径 = "/start.html"
         if 路径 == "/api/启动/状态":
             self.送JSON(启动.状态(self.本机端口()))
             return

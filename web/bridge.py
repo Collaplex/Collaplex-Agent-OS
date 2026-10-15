@@ -37,11 +37,11 @@ import native_marks  # noqa: E402  (各家原生标记: 草稿流进正文区之
 import outsource_hook
 import sub_agent
 
-if str(_ROOT) not in sys.path:                        # 根目录的接缝件(定时.py)
+if str(_ROOT) not in sys.path:                        # 根目录的接缝件(timers.py)
     sys.path.insert(0, str(_ROOT))
-import 清单
-import 定时  # noqa: E402
-import 作业  # noqa: E402 - 长活的账(过程里要把在跑/跑完报出来)
+import manifest as 清单
+import timers as 定时  # noqa: E402
+import jobs as 作业  # noqa: E402 - 长活的账(过程里要把在跑/跑完报出来)
 
 事件 = dict[str, Any]
 历史表 = list[dict[str, str]]
@@ -502,7 +502,7 @@ def 清单收工(对话id: str) -> int:
 
 def 作业列表() -> dict[str, Any]:
     """web 里那排作业卡要的数据 —— 起过的活 + 状态/退出码/日志尾(读不到就空着, 不要把设置页带崩)。"""
-    import 作业
+    import jobs as 作业
 
     try:
         return {"活": 作业.列()}

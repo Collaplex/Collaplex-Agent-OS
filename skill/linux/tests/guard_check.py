@@ -72,7 +72,7 @@ CASES: list[tuple[str, bool, str]] = [
     ("find /tmp -type f -name '*.log' -delete", False, "筛过再删"),
     ("nohup python -m http.server 8899 > logs/x.log 2>&1 &", False, "起临时服务"),
     ("kill 1234", False, "停一个进程"),
-    ("tar czf a.tgz dir", False, "打包"),
+    ("tar czf a.tgz dir", False, "packaging"),
 ]
 
 

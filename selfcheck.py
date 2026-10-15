@@ -37,7 +37,7 @@ from typing import Any, cast
 
 HERE = Path(__file__).resolve().parent
 
-import 件定位   # 常见于: 件可能以源码/字节码/编译件三种形态存在
+import path_locator as 件定位   # 常见于: 件可能以源码/字节码/编译件三种形态存在
 
 for _p in (HERE, HERE / "skill" / "rag" / "scripts"):
     if str(_p) not in sys.path:
@@ -564,14 +564,14 @@ ENTRY_FILES: tuple[str, ...] = (
     "sub_agent.py",
     "exec_agent.py",
     "cli.py",
-    "算token.py",
+    "count_tokens.py",
     "watchdog.py",
     "outsource_hook.py",
     "skill/rag/scripts/refine.py",
-    "解析器/自测.py",
+    "parser/selftest.py",
     "web/server.py",
     "web/bridge.py",
-    "web/启动.py",
+    "web/start.py",
 )
 
 
@@ -599,7 +599,7 @@ def check_code(items: list[Item]) -> None:
     else:
         pass_it(items, "代码",
                 f"{len(ENTRY_FILES)} 个入口都在"
-                " (main / sub_agent / exec_agent / cli / 算token / watchdog / outsource_hook / refine / 解析器自测 / web)")
+                " (main / sub_agent / exec_agent / cli / count_tokens / watchdog / outsource_hook / refine / parser 自测 / web)")
 
     wanted = ("seek", "rag", "skill_search", "linux", "file", "math", "outsource", "mtp", "ops", "search", "vision")
     gone = [name for name in wanted if not (HERE / "skill" / name).is_dir()]
@@ -914,7 +914,7 @@ def check_timer(items: list[Item]) -> None:
     # 这个进程没带前缀, 不设就是用真名去删, 会把生产表 timers 删掉(2026-10-09 实测已踩坑)。
     老前缀 = os.environ.get("COLLAPLEX_DB_PREFIX", "")
     try:
-        import 库  # noqa: PLC0415  - 仓根就在 sys.path 上
+        import memory_store as 库  # noqa: PLC0415  - 仓根就在 sys.path 上
 
         os.environ["COLLAPLEX_DB_PREFIX"] = 环境键
         库.删表("timers")

@@ -12,7 +12,7 @@ OWNER="${SUDO_USER:-}"
 case "$1" in
 configure)
     # ① 运行时: venv + 依赖(openai / python-dotenv / numpy / psycopg[binary] / websocket-client)
-    #    ★ psycopg 与 websocket-client 是干净机上跑自检抓出来的漏登记(库.py 顶层 import psycopg)
+    #    ★ psycopg 与 websocket-client 是干净机上跑自检抓出来的漏登记(memory_store.py 顶层 import psycopg)
     #    直连优先, 超时/失败自动切清华镜像 —— 与 collaplex-audio / 7z-encrypt 同一套
     if [ ! -x "$VENV/bin/python" ]; then
         python3 -m venv "$VENV" || true
@@ -79,7 +79,7 @@ configure)
     echo "    1) 记忆库要 PostgreSQL + pgvector(pgvector 装上还得在库里 CREATE EXTENSION vector),"
     echo "       并在 $CONF/env 里填 RAG_PG_DSN;"
     echo "    2) ★ 空库要先建表 —— 程序自己建不起来(先读后建的顺序问题), 照抄命令见:"
-    echo "         $ROOT/首次部署.md"
+    echo "         $ROOT/deployment-first-run.md"
     echo "    3) DEEPSEEK_* / MIMO_* 只有富余的外援 skill 用, 按需再填"
     ;;
 abort-upgrade|abort-remove|abort-deconfigure)

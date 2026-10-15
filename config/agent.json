@@ -10,7 +10,7 @@
     "max_tokens": 3000,
     "max_rounds": 4,
     "max_nudges": 2,
-    "_说明_手提示": "exec 的手提示 = config/sub_agent.json 的 prompts.exec 指向的文件。'标记'版（要求 <调用>命令</调用>，旧写法）另存为 config/skills/exec-标记.md —— 切回旧行为只改 prompts.exec 这一个键。★ prompts 是文件映射表，不许往里面塞说明键（自检会逐键当文件查）。",
+    "_说明_手提示": "exec 的手提示 = config/sub_agent.json 的 prompts.exec 指向的文件。'标记'版（要求 <调用>命令</调用>，旧写法）另存为 config/skills/exec-mark.md —— 切回旧行为只改 prompts.exec 这一个键。★ prompts 是文件映射表，不许往里面塞说明键（自检会逐键当文件查）。",
     "命令提取": {
       "读回件": "命令读回",
       "读回模型": "本地",

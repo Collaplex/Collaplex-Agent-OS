@@ -52,7 +52,7 @@ def _开浏览器(地址: str) -> None:
 
 
 def 起web(端口: int, 本地: bool, 开: bool) -> int:
-    from web import 启动, server
+    from web import start as 启动, server
 
     地址 = f"http://127.0.0.1:{端口}/启动"   # ★ 软件启动先站到启动页, 不是直接进主页面
     if 本地:
@@ -100,7 +100,7 @@ def main(argv: list[str] | None = None) -> int:
     if 参数.命令 == "自检" or 参数.命令 in ("selfcheck", "--selfcheck"):
         return 跑自检()
     if 参数.命令 == "模型" or 参数.命令 == "models":
-        from web import 启动
+        from web import start as 启动
         return 启动.管模型(参数.动作)
     if 参数.命令 == "chat":
         import main as 对话

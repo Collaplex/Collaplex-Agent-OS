@@ -31,7 +31,7 @@ HERE = Path(__file__).resolve().parent          # skill/orchestra
 ROOT = HERE.parent.parent                       # 项目根
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-import 清单  # noqa: E402  - 清单逻辑在仓根(框架侧), 这里只是它的命令行
+import manifest as 清单  # noqa: E402  - 清单逻辑在仓根(框架侧), 这里只是它的命令行
 
 动作说明: list[tuple[str, str]] = [
     ("plan", "立单：从 --json 或 stdin 收条目(数组), 整份盖掉这一对话原来的单"),

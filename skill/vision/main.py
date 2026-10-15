@@ -27,7 +27,7 @@ SCRIPTS = HERE / "scripts"                   # 实现都在这
 ROOT = HERE.parent.parent                    # 项目根 (放 .venv)
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))   # 根上的公共件
-import 件定位   # noqa: E402
+import path_locator as 件定位   # noqa: E402
 
 # 动作名 -> (脚本文件名, 递给它的子动作名(None=不递), 一句话说明)
 ACTIONS: dict[str, tuple[str, str | None, str]] = {

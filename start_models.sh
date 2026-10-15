@@ -24,7 +24,7 @@ LLAMA="$HERE/vendor/llama.cpp/build/bin/llama-server"
 #   目录结构照旧是 <发布者>/<模型>/, 所以下面三条路径不用改。
 # 模型目录: 默认跟老板这台机一致; 换机器 / 做镜像用 COLLAPLEX_MODELS 指到别处。
 # ★ 这里为什么自己去配置里捞一下: 应用只在"用到模型"的核心模块里 load_dotenv,
-#   而「模型 start」这条路径(cli → web/启动.py 管模型 → 转发给本脚本)不经过那些模块,
+#   而「模型 start」这条路径(cli → web/start.py 管模型 → 转发给本脚本)不经过那些模块,
 #   子进程里就没有这个变量 —— 于是镜像里会去 /home/lou/models 找模型, 找不到起不来。
 #   只取这一个键(不 source 整个文件), 免得把库口令之类的带进 shell。
 if [ -z "${COLLAPLEX_MODELS:-}" ]; then

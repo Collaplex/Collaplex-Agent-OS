@@ -83,7 +83,7 @@ description: 资料检索。把问题丢进来，拿回最相关的原文片段�
 3. **清空热层** —— tier=2 的那批对话产出清掉（原文已在 tier=1 躺好才敢清）
 
 ★ **代码现状（2026-10-08）**：`refine.py` 里的 tier 常量还是老的两层写法（2->3 搬 `kind='原文'`），
-**尚未改成上面的三步**；老数据已由 `scripts/落地历史对话层.py` 一次性归位（tier=3 的 `kind='原文'` 已下沉到 tier=1）。
+**尚未改成上面的三步**；老数据已由 `scripts/ingest_history_layer.py` 一次性归位（tier=3 的 `kind='原文'` 已下沉到 tier=1）。
 改 `refine.py` 时照本节的三步来，别再把"原文"留在经验层。
 
 **老写法的三条（存档，别照抄）**：
@@ -168,4 +168,4 @@ select text from rag_chunks where id = any(string_to_array('14965,14967', ',')::
 | **系统实例** | DSN（`.env` 的 `RAG_PG_DSN`，`host=/var/run/postgresql`）| **`collaplex_rag`** = 新架构 `rag_chunks` ★ 读写都走它 |
 | **用户实例** | `host=/home/lou/pgdata/socket`（免密，`user=lou`）| **`collaplex_agent`** = 老架构 5 张中文表（热_对话/冷_原文/冷_概述/冷_知识/冷_别名），**只读留档** |
 
-**搬运用**：`scripts/落地历史对话层.py`（幂等，可重复跑）；**JSON 迁移**：`scripts/迁移JSON到PG.py`。
+**搬运用**：`scripts/ingest_history_layer.py`（幂等，可重复跑）；**JSON 迁移**：`scripts/migrate_json_to_pg.py`。

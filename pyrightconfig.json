@@ -1,14 +1,14 @@
 {
   "include": [
     "main.py",
-    "定时.py",
-    "作业.py",
+    "timers.py",
+    "jobs.py",
     "sub_agent.py",
     "exec_agent.py",
     "native_marks.py",
-    "解析器",
+    "parser",
     "tokenizer.py",
-    "算token.py",
+    "count_tokens.py",
     "selfcheck.py",
     "outsource_hook.py",
     "cli.py",
@@ -16,7 +16,6 @@
     "mvp_os.py",
     "web",
     "tests",
-    "diagrams",
     "skill"
   ],
   "exclude": [

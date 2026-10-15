@@ -1,7 +1,0 @@
-{
-  "include": ["."],
-  "exclude": ["**/__pycache__", "**/*.npz", "**/*.jsonl", "**/*.json"],
-  "typeCheckingMode": "strict",
-  "extraPaths": [".", "/home/lou/mineru-env/lib/python3.11/site-packages"],
-  "pythonVersion": "3.11"
-}

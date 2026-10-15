@@ -1,7 +1,7 @@
 ---
 name: ops
 description: 这套系统自己的使用与维护手册（Collaplex Agent OS）。问"它怎么起 / 怎么用 / 怎么维护 / 怎么排错"时走这里：总入口与启动页两按钮、本地模型(8790)与向量(8199)、记忆库 PG 两个实例、三层记忆与预算、清洗与灌二层嵌入、命令库与 skill 清单、外援/定时/编排/看图/搜索/长活作业、日志在哪、自检与看门狗、配置在哪能改、加新 skill、打包与开源发布、症状对照表。★ 只照手册里的真命令做，别凭印象写命令、别擅自改配置。★ 只认**主语是这套系统自己**的问题；本机实况（磁盘 / 内存 / 进程 / 端口 / 系统日志 journalctl）仍走 linux。
-trigger_keywords: [agent os, collaplex, collaplex-agent, 这套系统, 这个程序, 使用手册, 手册, 维护, 怎么用, 怎么起, 起服务, 起不来, 排错, 故障, 自检, selfcheck, 看门狗, 日志在哪, 清洗, refine, 灌二层, 嵌入, embed, 三层记忆, 记忆库, 启动页, 8791, 8790, 8199, 加skill, 加一个新skill, 打包, pack_bundle, 发布, 编译, 配置在哪, 首次部署]
+trigger_keywords: [agent os, collaplex, collaplex-agent, 这套系统, 这个程序, 使用手册, 手册, 维护, 怎么用, 怎么起, 起服务, 起不来, 排错, 故障, 自检, selfcheck, 看门狗, 日志在哪, 清洗, refine, 灌二层, 嵌入, embed, 三层记忆, 记忆库, 启动页, 8791, 8790, 8199, 加skill, 加一个新skill, packaging, pack_bundle, 发布, 编译, 配置在哪, 首次部署]
 version: 1.0.0
 ---
 

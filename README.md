@@ -1,12 +1,14 @@
 # Collaplex Agent OS
 
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue?style=flat-square)](pyproject.toml)
+[![Local-first](https://img.shields.io/badge/runs-local--first-2ea44f?style=flat-square)](#why-it-exists)
 
 **The program keeps the state. The model only reasons.**
 
 Collaplex Agent OS is a local-first agent runtime for real machine work. It reads the actual state of the machine and the material you point it at, decides what has to be done, hands the doing to tool-bearing executors, and brings the output and the exit code back unchanged. Every step is visible while it runs, and every figure in an answer can be traced to the command output it came from.
 
-Repository `collaplex-agent` · CLI `collaplex-agent` · Source [collaplex.me/git/edgevoid/collaplex-agent](https://collaplex.me/git/edgevoid/collaplex-agent)
+Repository: [Collaplex/Collaplex-Agnet-OS](https://github.com/Collaplex/Collaplex-Agnet-OS) · CLI: `collaplex-agent` · Landing page: [collaplex.me/agent.html](https://collaplex.me/agent.html)
 
 ---
 
@@ -45,7 +47,7 @@ Capabilities below are verified, not designed. Each row states what was actually
 | 9 | **Long jobs outlive the conversation** | A long task goes to the job ledger: it keeps a log on disk, can be resumed, never holds the foreground, and reports `started` / `finished · exit code` inside the process panel |
 | 10 | **Answers are checked against the run** | Hard figures in an answer — percentages, sizes, core counts, temperatures — are matched against this round's real command output with plain regex, no extra model call; mismatches are flagged without rewriting the answer |
 | 11 | **Everything the model sees is editable** | Per-role endpoints and models, memory counts, a retrieval test entry point and the skill list all live on the settings page |
-| 12 | **One entry point** | `cli.py`: `web`, `自检` / `selfcheck`, `模型` / `models`, `chat` |
+| 12 | **One entry point** | `cli.py`: `web`, `selfcheck` (自检), `models` (模型), `chat` |
 
 ---
 
@@ -83,6 +85,20 @@ Capabilities below are verified, not designed. Each row states what was actually
 
 ---
 
+## What it looks like
+
+![Collaplex Agent OS: a long job running in the process panel](assets/screenshot-window.jpg)
+
+| Long-running work, status inside the process panel | Settings: endpoints, models, memory |
+|---|---|
+| ![long job](assets/screenshot-longjob.jpg) | ![settings](assets/screenshot-settings.jpg) |
+
+A conversation mid-way — judgement, the skill that was picked, the command that ran, and its raw output, all side by side:
+
+![chat](assets/screenshot-chat.jpg)
+
+---
+
 ## Requirements
 
 - Python **3.11+**
@@ -97,7 +113,7 @@ Direct runtime dependencies are deliberately few — `openai`, `python-dotenv`, 
 ## Install
 
 ```bash
-git clone https://collaplex.me/git/edgevoid/collaplex-agent.git
+git clone https://github.com/Collaplex/Collaplex-Agnet-OS.git
 cd collaplex-agent
 uv venv && uv pip install -r requirements.txt
 cp .env.example .env          # then edit .env
@@ -136,13 +152,13 @@ OPENAI_API_KEY=local
 ## Run
 
 ```bash
-PY cli.py 自检         # self-check: config / dependencies / libraries / code / structure / timers
-PY cli.py 模型 start   # start local model services (llama.cpp on :8790, embeddings on :8199)
+PY cli.py selfcheck      # self-check: config / dependencies / libraries / code / structure / timers
+PY cli.py models start   # start local model services (llama.cpp on :8790, embeddings on :8199)
 PY cli.py web          # web interface
 PY cli.py chat         # command-line chat
 ```
 
-`cli.py` accepts the English aliases as well: `selfcheck`, `models`.
+`cli.py` also accepts the Chinese aliases: `自检`, `模型`.
 
 In the web interface you can ask a question or dispatch a task. Answers arrive next to a process panel that shows the judgement, the skill that was selected, the command that actually ran and its output — which is also where long-job status is reported.
 
@@ -155,13 +171,13 @@ In the web interface you can ask a question or dispatch a task. Answers arrive n
 | Skill | Purpose | Docs |
 |---|---|---|
 | `linux` | Command library for system work: disk, ports, services, processes, logs | 65 entries · 1,325 lines |
-| `ops` | Operations handbook for this runtime itself | 29 |
-| `file` | Reading, writing and verifying code changes | 17 |
-| `kali` | Security self-checks | 16 |
-| `math` | Deterministic arithmetic — never routed through a model | 13 |
-| `vision` | Looking at images | 13 |
-| `search` | Fetching pages from the network | 10 |
-| `skill_search` | Routing a question to the right skill | 6 |
+| `ops` | Operations handbook for this runtime itself | 28 |
+| `file` | Reading, writing and verifying code changes | 16 |
+| `kali` | Security self-checks | 15 |
+| `math` | Deterministic arithmetic — never routed through a model | 12 |
+| `vision` | Looking at images | 2 |
+| `search` | Fetching pages from the network | 9 |
+| `skill_search` | Routing a question to the right skill | — |
 | `rag` | Chunking, retrieval and cleanup | — |
 | `seek` | The main skill text | 1 |
 | `outsource` | Budgeted help from an outside model, used when the local one stalls | 1 |
@@ -208,6 +224,7 @@ AGPL-3.0 lets you use, study, modify and redistribute this software, including a
 
 ## Links
 
-- Source and issues: <https://collaplex.me/git/edgevoid/collaplex-agent>
+- Source, issues and releases: <https://github.com/Collaplex/Collaplex-Agnet-OS>
+- Landing page: <https://collaplex.me/agent.html>
 - Project site: <https://collaplex.me>
 - 中文文档（含完整架构设计）: [docs/README.zh.md](docs/README.zh.md)

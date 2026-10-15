@@ -9,7 +9,7 @@
 
     .venv/bin/python tests/skill_style_probe.py            # 全部组 × 全部版本 × 两支模型
     .venv/bin/python tests/skill_style_probe.py --只 3      # 只跑第 3 题(单题重跑, 项目惯例)
-    .venv/bin/python tests/skill_style_probe.py --版本 judge-钢印.md
+    .venv/bin/python tests/skill_style_probe.py --版本 judge-stamped.md
 
 产物（边跑边落盘）: logs/对照-skill写法-<日期>.jsonl（每发一行）＋ .txt（汇总 + 明细）
 """

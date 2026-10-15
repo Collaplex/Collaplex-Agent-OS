@@ -1,8 +1,0 @@
-{
-  "extends": "../../pyrightconfig.json",
-  "extraPaths": ["/home/lou/mineru-env/lib/python3.11/site-packages"],
-  "reportMissingImports": "none",
-  "reportUnknownMemberType": "none",
-  "reportUnknownVariableType": "none",
-  "reportUnknownArgumentType": "none"
-}

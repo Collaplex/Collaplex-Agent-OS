@@ -25,7 +25,7 @@ version: 1.0.0
 文件  find grep ls head wc     服务  systemctl journalctl tail nohup
 文本  sort uniq diff sed awk   权限  chmod stat file which ln
       cut xargs tee jq
-网络  ip ping curl scp rsync   打包  tar
+网络  ip ping curl scp rsync   packaging  tar
 版本  git pip                  系统  date env crontab apt uptime dmesg
 校验  md5sum sha256sum         开机  systemd-analyze watch
 硬件  nvidia-smi sensors lsusb lspci lshw

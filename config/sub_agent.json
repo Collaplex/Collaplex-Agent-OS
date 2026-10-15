@@ -53,7 +53,7 @@
     "wrapup": "config/skills/wrapup.md",
     "readback": "config/skills/readback.md",
     "judge_freeform": "config/skills/judge-freeform.md",
-    "命令读回": "config/skills/命令读回.md"
+    "命令读回": "config/skills/command-readback.md"
   },
   "skill_retrieval": {
     "enabled": true,

@@ -14,8 +14,8 @@
     .venv/bin/python skill/timer/main.py status
     .venv/bin/python skill/timer/main.py selfcheck
 
-实现分两处: scripts/引擎.py(表 · 判据 · 时间解析 · 阻塞等待 · 线程) / scripts/动作.py(命令行动作).
-动作表只有一份(在 动作.py 的 动作说明 里), 这里现问现列 —— 不另抄一份以免对不上.
+实现分两处: scripts/timer_engine.py(表 · 判据 · 时间解析 · 阻塞等待 · 线程) / scripts/action.py(命令行动作).
+动作表只有一份(在 action.py 的 动作说明 里), 这里现问现列 —— 不另抄一份以免对不上.
 输出不截断、不加工, 退出码原样带回(0 成了 / 1 条件不足 / 2 用法错 / 3 没找着).
 """
 
@@ -30,8 +30,8 @@ SCRIPTS = HERE / "scripts"                  # 实现都在这
 ROOT = HERE.parent.parent                   # 项目根 (放 .venv)
 
 sys.path.append(str(Path(__file__).resolve().parent.parent.parent))   # 根上的公共件
-import 件定位   # noqa: E402
-动作件 = 件定位.件路径(SCRIPTS, "动作.py")
+import path_locator as 件定位   # noqa: E402
+动作件 = 件定位.件路径(SCRIPTS, "action.py")
 
 
 def python_bin() -> str:
@@ -49,7 +49,7 @@ def 递(参数: list[str]) -> int:
 
 
 def show_actions() -> None:
-    """动作表问 动作.py(单一来源), 不在这里另抄."""
+    """动作表问 action.py(单一来源), 不在这里另抄."""
     print("定时任务可用动作:")
     completed = subprocess.run([python_bin(), str(动作件), "actions"],
                               cwd=ROOT, capture_output=True, text=True)

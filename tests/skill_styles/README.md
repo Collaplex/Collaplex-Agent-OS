@@ -4,10 +4,10 @@
 
 | 版本 | 来源 | 行数 |
 |---|---|---|
-| `judge-现行.md` | `config/skills/judge.md` 的**逐字节拷贝**（冻结当"对照臂"） | 84 |
-| `judge-钢印.md` | 新写法（老板的想法：先洗脑型约束，再"能干什么 / 不能干什么 / 需要做什么"） | 48 |
-| `judge-现行-说话.md` | 同现行，只把"只输出 JSON"换成"你怎么判的就原原本本说出来" | 83 |
-| `judge-钢印-说话.md` | 同钢印，同上放开契约 | 47 |
+| `judge-current.md` | `config/skills/judge.md` 的**逐字节拷贝**（冻结当"对照臂"） | 84 |
+| `judge-stamped.md` | 新写法（老板的想法：先洗脑型约束，再"能干什么 / 不能干什么 / 需要做什么"） | 48 |
+| `judge-current-speak.md` | 同现行，只把"只输出 JSON"换成"你怎么判的就原原本本说出来" | 83 |
+| `judge-stamped-speak.md` | 同钢印，同上放开契约 | 47 |
 
 两版**只换写法、不换内容**：判据点一一对应（结果落点 / 要出一个数 / 本系统手册 / 上文指代 / 短句不看长短 / 算数的例外），
 产出契约都是 `{"need": bool, "wanted": str}` —— 否则对照的变量就不止一个了；
@@ -19,7 +19,7 @@
 # ① 答对没有（判据准不准）：5 组 28 题 × 版本 × 2 模型
 .venv/bin/python tests/skill_style_probe.py
 .venv/bin/python tests/skill_style_probe.py --只 3            # 单题重跑（项目惯例）
-.venv/bin/python tests/skill_style_probe.py --版本 judge-钢印.md
+.venv/bin/python tests/skill_style_probe.py --版本 judge-stamped.md
 
 # ② 输出长成什么样（不判对错，只收形态）：4 个"说"场景 × 版本 × 2 模型
 .venv/bin/python tests/skill_voice_probe.py

@@ -12,7 +12,7 @@
 **`config/`（配置区，代码不写死）**
 - `agent.json`　skill 路径 / 超时 / 生成上限 / 黑名单 / 宽目标名单 / **界面文字**（`ui.*`）
 - `sub_agent.json`　检索参数 · `budget`（上下文与记忆预算）· `prompts`（提示词登记）· `skills` 开关 · `skill_retrieval.不可交办`
-- `think_routing.json`　思考路由（哪种任务才开思考 + 各家方言）· `outsource_trigger.json`　外援自动触发判据 · `解析.json`　模型家族关键词
+- `think_routing.json`　思考路由（哪种任务才开思考 + 各家方言）· `outsource_trigger.json`　外援自动触发判据 · `parsing.json`　模型家族关键词
 - `skills/*.md`　各内部步骤的提示词（plan / judge / pick / exec / nudge / wrapup + 清洗三份）—— ★ 这些是**内部零件**，放 config 不放 `skill/`（否则会被当成可交办的能力挑走）
 
 **`skill/<名>/resources/*.json`**：那个 skill 自己的配置（开关 / 阈值 / 价目 / 参数），如 `skill/outsource/resources/outsource.json`、`skill/rag/resources/embed.json`。

@@ -45,7 +45,7 @@ def 云端端点(config: dict[str, Any]) -> tuple[dict[str, Any] | None, str]:
 
 
 def 本地端点(config: dict[str, Any]) -> tuple[dict[str, Any] | None, str]:
-    """拼本地视觉端点 (兜底). 允许用环境变量覆盖 (跟 本地兜底.sh 一套路子)."""
+    """拼本地视觉端点 (兜底). 允许用环境变量覆盖 (跟 local_fallback.sh 一套路子)."""
     节 = core.as_dict(config.get("兜底"))
     覆盖 = core.as_dict(节.get("env覆盖"))
     端点 = str(节.get("base_url") or "")
@@ -84,7 +84,7 @@ def 落盘(config: dict[str, Any], 记录: dict[str, Any], 问句: str, 结果: 
     目录 = core.SKILL_DIR / str(节.get("产出目录") or "logs/vision")
     目录.mkdir(parents=True, exist_ok=True)
     戳 = datetime.now().strftime("%Y%m%d-%H%M%S")
-    产出 = 目录 / f"{戳}-看图.md"
+    产出 = 目录 / f"{戳}-see-image.md"
     产出.write_text(
         "\n".join([
             f"# 看图 {戳}",

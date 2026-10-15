@@ -7,7 +7,7 @@
 
     ① 规则层：在散文里抠 JSON（`子agent.parse_json_object`）
     ② 关键词层：戏内说法 → 结论（"转到院里/得有人去/派人" ⇒ 需要；"窗口就能办/我来说清" ⇒ 不需要）
-    ③ 模型层：仍翻不出，就把这段散文交给翻译件（`tests/skill_styles/翻译件.md`）翻成一行 JSON
+    ③ 模型层：仍翻不出，就把这段散文交给翻译件（`tests/skill_styles/translated.md`）翻成一行 JSON
 
 产物同时是**训练数据的原料**（每题 × 每模型 × 原文 × 期望 × 三级结果）。
 
@@ -86,7 +86,7 @@ def L2_关键词(原文: str) -> bool | None:
 
 def main() -> int:
     解析 = argparse.ArgumentParser()
-    解析.add_argument("--版本", default="judge-叙事.md", help="被翻译的那一版 skill 文件名")
+    解析.add_argument("--版本", default="judge-narrative.md", help="被翻译的那一版 skill 文件名")
     参数 = 解析.parse_args()
 
     日期 = dt.date.today().strftime("%Y%m%d")
@@ -106,7 +106,7 @@ def main() -> int:
             fh.write(文 + "\n")
 
     被翻 = (材料目录 / 参数.版本).read_text(encoding="utf-8")
-    翻译件 = (材料目录 / "翻译件.md").read_text(encoding="utf-8")
+    翻译件 = (材料目录 / "translated.md").read_text(encoding="utf-8")
     mimo客户端, mimo模型 = sub_agent.build_client()
     本地名 = 本地模型名()
     本地 = 本地客户端()

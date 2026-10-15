@@ -77,11 +77,11 @@ version: 1.0.0
 丢后台, 等它跑完再把结果收回来 —— 这就是「延时让活跑完, 然后看结果」。
 
 ```bash
-./.venv/bin/python 作业.py 起 "命令原文" "给人看的说明"   # 回一个活号
-./.venv/bin/python 作业.py 查 <活号>                       # 在跑 / 跑完(退出码) / 失败 + 日志尾
-./.venv/bin/python 作业.py 等 <活号> [--上限秒 30]          # 等到它跑完(每秒读秒), 或只看一眼
-./.venv/bin/python 作业.py 列                              # 起过的活
-./.venv/bin/python 作业.py 停 <活号>                        # 半路不要了
+./.venv/bin/python jobs.py 起 "命令原文" "给人看的说明"   # 回一个活号
+./.venv/bin/python jobs.py 查 <活号>                       # 在跑 / 跑完(退出码) / 失败 + 日志尾
+./.venv/bin/python jobs.py 等 <活号> [--上限秒 30]          # 等到它跑完(每秒读秒), 或只看一眼
+./.venv/bin/python jobs.py 列                              # 起过的活
+./.venv/bin/python jobs.py 停 <活号>                        # 半路不要了
 ```
 
 ★ **跑完不用你盯着**: 下一轮开场时框架会自动把「跑完的活 + 退出码 + 日志尾」当开场话交给你

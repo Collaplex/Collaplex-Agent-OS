@@ -9,7 +9,7 @@
 - ★ 基座那份解释器**绝不能 strip**（`symbol lookup error: undefined symbol`）；要瘦只删没用目录（`tcl`/`tk`/`idle`）
 
 **② 编译成独立可执行件（Nuitka，★ 不含 skill）**
-- `bash 编译.sh`（自己 setsid 脱离会话跑，日志 `logs/编译.log`，约 25 分钟）→ `bash 挂数据.sh`（把 config/state/logs/skill 等软链进产物，必须做）
+- `bash build.sh`（自己 setsid 脱离会话跑，日志 `logs/编译.log`，约 25 分钟）→ `bash mount_data.sh`（把 config/state/logs/skill 等软链进产物，必须做）
 - ★ 必须 `--include-package`：`openai / pydantic / anyio / jiter / sniffio / h11`（漏 `openai` 编译能过、首页能开，**真打一轮就炸**）
 - skill 是指回源目录的软链 ⇒ **skill 改动即时生效，不用重编**
 
@@ -18,4 +18,4 @@
 - ★ 发之前**全历史扫凭据**（`git log --all --oneline -- .env` + `git grep <真值> $(git rev-list --all)`），历史里进过 `.env` 就用 `filter-branch` 清 + 强推；扫描词只取密钥类（KEY/TOKEN/SECRET/PASSWORD），别把 URL / 模型名当搜索词
 - 推完验收：匿名能看到仓库页 / raw 文件 / 归档（`REQUIRE_SIGNIN_VIEW` 要为 false），每个仓真克隆一遍核密钥 0 命中
 
-**新机器上手**：见项目根 `首次部署.md`（PG + pgvector → 空库先建表四步 → 凭据与模型服务 → `collaplex-agent 自检` + 一问一答）。
+**新机器上手**：见项目根 `deployment-first-run.md`（PG + pgvector → 空库先建表四步 → 凭据与模型服务 → `collaplex-agent 自检` + 一问一答）。

@@ -20,6 +20,6 @@ Description: Collaplex Agent OS —— 程序管记忆, 模型管推理的 Agent
  凭据与模型服务不在包里: 照 /usr/share/collaplex-agent-os/.env.example
  填 /etc/collaplex-agent-os/env(模式 600)。
  .
- 交付形态两种: 源码包(带 .py) 与 字节码包(只有 .pyc, 由 打包/打deb.sh --字节码 打)。
+ 交付形态两种: 源码包(带 .py) 与 字节码包(只有 .pyc, 由 packaging/make_deb.sh --字节码 打)。
  字节码跟着 CPython 小版本走, 所以依赖写的是 python3 (>= 3.14) ——
  源码形态本来 3.11 起就能跑, 这里为两种形态共用一份控制文件, 统一按 3.14 要求。

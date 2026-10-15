@@ -1,9 +1,72 @@
-# 本地/运行期，不进仓库
 __pycache__/
 *.pyc
 .venv/
+
+# 二层热库的语料产出 —— 执行产出会不断新增, 不进库
+skill/rag/corpus/
+.backup/
 state/
-corpus/
-*.env
-.env*
-*.log
+
+# 倒排表缓存 —— 索引一变就重建, 不进库
+skill/linux/cache/
+skill/file/cache/
+skill/math/cache/
+skill/ops/cache/
+skill/search/cache/
+skill/search/logs/
+skill/vision/cache/
+skill/vision/logs/
+
+# 看图测试图 —— 现造现用, 不进库
+skill/vision/tests/样本/
+
+# 出图的落点 —— 运行产物
+skill/math/logs/
+
+# carve 的备份与旁车日志 —— 运行产物
+.carve-backups/
+*.crv
+*.restored
+
+# Nuitka 编译产物 —— 几十 MB, 不入库
+build-nuitka/
+
+# 打包产物(解压即用包) —— 46MB, 不入库
+dist/
+
+skill/outsource/cache/
+skill/mtp/cache/
+.env
+# ★ 只写 .env 挡不住 .env.bak-* / .env.local 这类变体 —— 备份文件里同样是明文密钥
+.env.*
+*.env.bak*
+# ★ 模板要进仓（README 让用户 cp .env.example .env）
+!.env.example
+
+# 日志 / 截图 / 实验数据 / 设计稿 —— 运行与历史产物, 整目录出仓(本地照留, 2026-10-16 老板定)
+#   exec 每条命令的完整输出也在这里; 库里只留路径
+logs/
+out/
+实验/
+diagrams/
+日志/
+skill/rag/scripts/*.log
+
+# 改名当天的两份本地备份与存档 —— 个人留存, 不进仓
+/backup-*/
+/archive-*
+
+# vendor/llama.cpp —— 只留源码 + 编译脚本, 编好的东西不进仓库
+#   (build/ 里光 libggml-cuda.so 就 50M; 别人 clone 下来自己 cmake 一次就行)
+#   源码本身要进仓库, 所以不能整个 vendor/ 忽略掉。
+vendor/llama.cpp/build/
+vendor/llama.cpp/models/
+vendor/llama.cpp/ggml/src/ggml-cuda/*.o
+
+# deb 打包残留 —— dpkg-buildpackage 会在 debian/ 下生成整棵树, 别提交
+/debian/*/
+!/debian/source/
+/debian/*.substvars
+/debian/files
+/debian/debhelper-build-stamp
+/dist/

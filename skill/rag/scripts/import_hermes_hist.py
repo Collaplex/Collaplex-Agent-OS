@@ -173,7 +173,7 @@ def main() -> int:
     con.close()
     # ★ 给下一棒(cron 里的 embed)留两样东西: 这轮落了哪些文件 / 断点推到哪。
     #   清单是**追加+去重**: 上一轮没嵌成功(清单里还留着)的不能被这轮冲掉 ——
-    #   清单由 自动灌语料.sh 在嵌完之后清空, 这样"嵌失败"也能下轮重来。
+    #   清单由 auto_ingest_corpus.sh 在嵌完之后清空, 这样"嵌失败"也能下轮重来。
     最新清单.parent.mkdir(parents=True, exist_ok=True)
     旧单 = [
         x.strip()

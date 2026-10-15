@@ -9,7 +9,7 @@
 
 **怎么量**
 - 跑一轮看界面那行尾缀：`[子agent] 查询 N 条 · 记忆 M 条 · skill X 字符` 与 `记忆上限 N`
-- 离线数 token：`./.venv/bin/python 算token.py <文件|文本> --在线`（在线那一发跟 API 报的 prompt_tokens 对一下）
+- 离线数 token：`./.venv/bin/python count_tokens.py <文件|文本> --在线`（在线那一发跟 API 报的 prompt_tokens 对一下）
 - 看窗口现取值：`sub_agent.current_context_window()`
 
 **备注**

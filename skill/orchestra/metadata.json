@@ -21,7 +21,7 @@
     "service": null
   },
   "runtime_files": {
-    "main.py": "入口：命令行动作，逻辑全在仓根的 清单.py（框架侧）"
+    "main.py": "入口：命令行动作，逻辑全在仓根的 manifest.py（框架侧）"
   },
   "state": {
     "表": "冷库 PG 表 orchestra，按对话分行（行键 = 对话id）",

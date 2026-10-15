@@ -158,9 +158,9 @@ def looks_like_preamble(text: str, markers: list[str], max_chars: int) -> bool:
 
 # ── 命令提取（2026-10-14 接线）──────────────────────────────────────────────
 # 手提示（config/skills/exec.md）改为"命令写入正文 + 末行声明本趟是否执行"后，命令来源三条：
-#   ① 调用标记：旧写法（config/skills/exec-标记.md）与别家原生标记（native_marks 统一识别）
+#   ① 调用标记：旧写法（config/skills/exec-mark.md）与别家原生标记（native_marks 统一识别）
 #   ② 尾巴规则层：本文件内的纯字符串规则（低开销快路径）
-#   ③ 专用读回件：config/skills/命令读回.md，本地模型，纯翻译，无云端开销
+#   ③ 专用读回件：config/skills/command-readback.md，本地模型，纯翻译，无云端开销
 # 设计约束：是否执行的判定不属本层 —— 上游以尾巴句表达意图，本层仅做机械对账。
 尾巴模式 = re.compile(r"这趟[^\n]{0,16}(?:跑|查|执行|看一眼|看看|试)")
 反引号模式 = re.compile(r"`([^`\n]{1,400})`")

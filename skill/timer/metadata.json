@@ -19,9 +19,9 @@
     "service": null
   },
   "runtime_files": {
-    "main.py": "入口：动作名递给 scripts/动作.py（动作表只有一份，现问现列）",
-    "scripts/引擎.py": "引擎：时间解析(时长/时刻) · 四项判据 · 原子写盘的表 · 阻塞等待 · 定时器线程 · 重挂 · 自检",
-    "scripts/动作.py": "命令行动作：register / cancel / list / take / wait / arm / status / selfcheck"
+    "main.py": "入口：动作名递给 scripts/action.py（动作表只有一份，现问现列）",
+    "scripts/timer_engine.py": "引擎：时间解析(时长/时刻) · 四项判据 · 原子写盘的表 · 阻塞等待 · 定时器线程 · 重挂 · 自检",
+    "scripts/action.py": "命令行动作：register / cancel / list / take / wait / arm / status / selfcheck"
   },
   "state": {
     "表": "冷库 PG 表 timers，按进程键分行（web 与 CLI 同一张表各占一行 —— 两个进程同时开着不互相覆盖）",

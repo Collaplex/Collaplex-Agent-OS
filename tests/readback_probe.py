@@ -5,7 +5,7 @@
 拿到主语就能分析意图然后代替 json，而且不会出现模型不输出我们要求的键。"*
 
 和 `translate_probe.py` 的区别：那个是把三级**规则**（抠 JSON / 关键词）串起来、模型翻译只做兜底；
-这个是**只用一个专用读回件**（`tests/skill_styles/读回件.md`，指令 + 手写 few-shot），
+这个是**只用一个专用读回件**（`tests/skill_styles/readback.md`，指令 + 手写 few-shot），
 一次读回，看"专用化"能把准确率抬到哪 —— 这就是"用专用件代替 JSON 契约"的上限估计。
 
 **离线复评**：直接吃三份已有 jsonl 里的原始输出（不再重跑上游模型），只花读回件的调用。
@@ -86,7 +86,7 @@ def main() -> int:
         with 产物.open("a", encoding="utf-8") as fh:
             fh.write(文 + "\n")
 
-    读回件 = (材料目录 / "读回件.md").read_text(encoding="utf-8")
+    读回件 = (材料目录 / "readback.md").read_text(encoding="utf-8")
     if 参数.模型 == "mimo":
         客户端, 模型名 = sub_agent.build_client()
     else:

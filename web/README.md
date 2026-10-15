@@ -53,9 +53,9 @@ cd ~/桌面/collaplex_agent
 ## md 渲染四条硬规矩
 
 照 18 家 AI 产品扒来的（证据与对照表见技能 `web-frontend-teardown` → `references/ai-vendor-md-rendering.md`）。
-**我们以前 md 渲染做不好的头号原因就是自己拿正则去切 markdown —— 18 家没有一家自己手写解析器。**
+**我们以前 md 渲染做不好的头号原因就是自己拿正则去切 markdown —— 18 家没有一家自己手写parser。**
 
-1. **别自己切 markdown**：每帧把**整段 buffer** 丢给 CommonMark 解析器，未闭合的围栏 / 半截表格 / 公式由它容错
+1. **别自己切 markdown**：每帧把**整段 buffer** 丢给 CommonMark parser，未闭合的围栏 / 半截表格 / 公式由它容错
    （秘塔活体样本：22 秒 2221 字全程没出现过裸 ```）。
 2. **块级复用 DOM 节点**：以"**抛光前的原始 HTML**"当 key，一个字节没变的块连节点都不换 —— 不闪、不重排、选中不丢。
 3. **新块淡入**：只有新出现的块加 `.md-新`；这轮结束挂 `.md-完成`，把动画全关
@@ -105,7 +105,7 @@ cd ~/桌面/collaplex_agent
 | 端点一挂，SSE **断在半路**（浏览器只看见卡住，服务端甩一屏 traceback） | 左链"挑 skill"那一步（`cli.find_skill_for`，也是调模型）**没包** —— 其余各跳都有 try；它只在"模型压根没起"时才会被走到（子agent 先挂 → 回落 → 拿原话去检索 skill → 这一步挂） | 那一跳也包上：说人话（`explain_model_error`）+ 一句"这轮按原样让主 agent 自己答"，然后**继续走回落**而不是抛出去 |
 | 跑着时正文区**露一串原始md**（`<调用>find . -name '*.py' …` 整条命令） | exec 那轮"边想边说"的草稿是**模型原文**，里头夹着工具调用标记；原样流进正文区就是那串东西。★ 逐片 strip 挡不住：片段边界会把标记切在两半（`<调`＋`用>ls`＋`</调用`），单看哪一片都不成标记 | 后端加 `native_marks.StreamFilter`（`bridge.py` 起草稿时过一道）：**每次拿"攒到现在的全量"重扫**，完整块整段跳过、开了头没闭合的就停在那等下一片 —— 块前后的人话照流。★ 别在前端做这个：前端只拿到一片片增量，判据容易落空 |
 | 改成"跑的时候不写正文"之后，**流式输出没了**（正文区一直空到 final 一次性出现） | 上一行的修法一刀切过头：把 `answer` 事件整个不写了 | 前端恢复 `流式答案.推()`（边流边渲染），干净与否交给后端那道 `StreamFilter`；前端只留一道"从第一处标记起整段截断"的兜底。★ 收尾的 `final` 是定稿，一字不动（正文里真讲这些标记的场合不少） |
-| 探针点不动发送按钮（`getBoundingClientRect` 报 null） | 页面被 `app.js` 弹到**启动页**了（`location.pathname === '/'` 且没带 `?直进=1`），启动页上没有 `#问框`/`#发送` | 自测地址统一带 `?直进=1`（`试端到端.py`／`验流式.py` 都改了）；探针里也别 `sleep 3` 就点，先轮询问框出没出 |
+| 探针点不动发送按钮（`getBoundingClientRect` 报 null） | 页面被 `app.js` 弹到**启动页**了（`location.pathname === '/'` 且没带 `?直进=1`），启动页上没有 `#问框`/`#发送` | 自测地址统一带 `?直进=1`（`e2e.py`／`verify_stream.py` 都改了）；探针里也别 `sleep 3` 就点，先轮询问框出没出 |
 | 高亮/悬停**写对了看不见**（computed style 说挂上了，眼睛看不到） | 面板底色 `--card`(#161616)，而 `--card-hi`(#1c1c1c) 跟它**只差 6 级** —— 挂在上面等于没挂。★ 只读 `getComputedStyle` 会骗人：它只证明 CSS 到位，不证明像素上有区别 | 面板里的底色用叠加别用色卡相邻档：悬停 `rgba(255,255,255,.07)`、走位 `rgba(74,222,128,.12)`，差 20 级上下才看得见。验收**必须截图看像素**（这条和"按钮没样式"那条是一对：那次是选择器没匹配上、这次是匹配上了但看不见） |
 | 键盘 `Backspace` 回上一级**没反应**（点了没动静、也不报错） | `回上一级()` 拿 `row.textContent.startsWith('..')` 找父行 —— 但每行前面还挂着个图标符 `▸`，拼起来是 `▸..（上一级）`，**永远匹配不上**、静默什么都不做 | 找行别靠文字：父行在铺项时挂 `.上级` 标记类，`querySelector('.路径行.上级')` 认标记。★ 这条是"键盘验收"抓出来的：只点鼠标走一遍是绿的（父行就在第一行、手点没问题），真按键才露馅 |
 | 模态弹窗开着，`Tab` 两三下就**摸到背景的输入框/发送** | 弹窗只管挡视线（遮罩盖住），**没接管焦点**；而且开面板时焦点还在外面（点开时落在 `#导入钮` 上），所以第一个 Tab 直接从背景往下走 | 开面板就 `路径框.focus()`（`.路径框` 挂 `tabindex="-1"`），Tab 时在面板内的 `button` 里**转圈**（`preventDefault` + 手算下一个）。★ 这条是回归脚本第【四】段专门按 Tab 走 6 下抓出来的 |
@@ -113,7 +113,7 @@ cd ~/桌面/collaplex_agent
 | 设置·**关闭**节三张卡点了就关，却看不到"现在谁在跑"（老板 2026-10-11 问"这个是啥"） | 那一节整节的活就是关掉"正在跑的东西"，但页面上只有三个按钮、没有任何实时状态 —— 等于让人闭着眼点 | 顶上挂一排灯（PG／主模型／向量／web）走 `GET /api/启动/状态`，**5 秒一刷**；没在跑的那个按钮直接置灰。★ 计时器必须在 `切()` 里收掉（`window.__节计时`）—— DOM 扔了计时器还在跑就是孤儿，和"日志"节同一个坑 |
 | 设置·**现状**节把 13 个 skill **挤成一行**（`file / kali / linux / …`） | 数组成员直接 `join(' / ')` 画成一行 | 数组一律**一条一行**（键用 `String(序+1).padStart(2,'0')`）—— 长列表挤成一行既读不下去、也白占了卡片的竖向空间。★ 认节别按等号匹配标题：那一节标题是「现状（只读）」，`textContent === '现状'` 永远为假（自测脚本头一轮就栽在这） |
 | 整轮**答案不显示、也不进存档**，界面上只剩一串过程行（老板 2026-10-11：`坏了又是bug`） | 模型偶尔把**整段回答**套进 ```json 围栏里 —— 协议本来是「正文 md ＋ 末尾一段 json」，它把正文也塞进 json 了。`find_tail_json` 指到 0 → `掐掉尾部JSON` 得空串 → web 收尾那句 `if 正文.strip(): 记一轮(...)` 一不成立就**什么都不做**：不显示、不记账、连「没答」都不说 | `main.捞正文()` 兜底（web 与命令行共用）：整段被围栏吃掉时先按 `回答/答案/正文/answer/text` 这些键把内容捞出来，捞不着就把原文整段端出来 + 给一句说明；`web/server.py` 再加一层「正文空就拿 usage 事件里那份原文顶上、照记账」。★ 规矩：**任何情况下都不许让一轮问答静默消失** —— 宁可难看，也要有交代（回归 `tests/test_render_stream.py` ⑤⑥⑦） |
-| 重启 web 后**记忆检索全废**（「记忆 0 条」）、定时也不灵 | 起 web 的脚本没带 `.env` —— 进程里没有 `RAG_PG_DSN`，只能靠代码里的 dotenv 兜底；而且 `.env` 那行值**带空格**，`source .env` 会被 shell 拆坏（当成「赋值 ＋ 跑命令」） | 起 web 一律走 `web/启动.py`（它自己读 `.env`），或在起脚本里 `RAG_PG_DSN="$(grep -m1 '^RAG_PG_DSN=' .env | cut -d= -f2-)"; export RAG_PG_DSN`。★ 验完对一眼：`tr '\0' '\n' < /proc/<pid>/environ | grep -c '^RAG_PG_DSN='` |
+| 重启 web 后**记忆检索全废**（「记忆 0 条」）、定时也不灵 | 起 web 的脚本没带 `.env` —— 进程里没有 `RAG_PG_DSN`，只能靠代码里的 dotenv 兜底；而且 `.env` 那行值**带空格**，`source .env` 会被 shell 拆坏（当成「赋值 ＋ 跑命令」） | 起 web 一律走 `web/start.py`（它自己读 `.env`），或在起脚本里 `RAG_PG_DSN="$(grep -m1 '^RAG_PG_DSN=' .env | cut -d= -f2-)"; export RAG_PG_DSN`。★ 验完对一眼：`tr '\0' '\n' < /proc/<pid>/environ | grep -c '^RAG_PG_DSN='` |
 
 
 另外两条产品口径：
@@ -125,17 +125,17 @@ cd ~/桌面/collaplex_agent
 
 ```bash
 # 历史: 开页只摆 10 轮(且钉在最新) + 上翻懒加载 + 动态卸载 + 跳点 + 设置页(清缓存后重跑, 否则脚本是旧的)
-uv run --no-project --with websocket-client python web/tests/验历史与设置.py
+uv run --no-project --with websocket-client python web/tests/verify_history_settings.py
 # 同上但对**临时实例**跑(设置那几步会真写设置, 指了别的端口就自动跳过); 翻页一律发真滚轮
-WEB_PORT=8792 uv run --no-project --with websocket-client python web/tests/验历史与设置.py
+WEB_PORT=8792 uv run --no-project --with websocket-client python web/tests/verify_history_settings.py
 # 端到端: 真点发送按钮 → 边流边拍页面 → 验四条流式铁律
-uv run --no-project --with websocket-client python web/tests/试端到端.py "讲讲 python 深浅拷贝..."
+uv run --no-project --with websocket-client python web/tests/e2e.py "讲讲 python 深浅拷贝..."
 # 边流边吐: 量时间轴 —— 跑着时正文就得长字, 且全程不许露协议标记(两次翻车的那个坑)
-uv run --no-project --with websocket-client python web/tests/验流式.py "看看当前目录下最大的 python 文件是哪个"
+uv run --no-project --with websocket-client python web/tests/verify_stream.py "看看当前目录下最大的 python 文件是哪个"
 # 颜色客观核验(不信眼睛看截图): 读 hljs 记号的计算颜色
-uv run --no-project --with websocket-client python web/tests/看颜色.py
+uv run --no-project --with websocket-client python web/tests/check_colors.py
 # 按元素放大截图(代码块/表格/公式/整屏); 选择器加 @N 取第 N 个
-uv run --no-project --with websocket-client python web/tests/截图.py
+uv run --no-project --with websocket-client python web/tests/screenshot.py
 ```
 
 前提：Chrome 带 `--remote-debugging-port=9333`；模型服务在跑（`./start_models.sh`）。

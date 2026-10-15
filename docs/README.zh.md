@@ -94,7 +94,7 @@
 
 ### 两层记忆
 
-底层索引的存取走 **`store.py` 抽象层**，后端在 `skill/rag/resources/embed.json` 的 `store` 段选：
+底层索引的存取走 **`memory_store.py` 抽象层**，后端在 `skill/rag/resources/embed.json` 的 `store` 段选：
 
 | 后端 | 落点 | 什么时候用 |
 |---|---|---|
@@ -198,17 +198,17 @@ collaplex_agent/
 ├── sub_agent.py         子 agent：检索记忆 / 拼 skill / 上下文预算 / 入二层（分析 / 判断两步都带"上一轮"的上文块）
 ├── exec_agent.py        执行 agent：声明 → 跑命令（黑名单 + 宽目标 + 复读掐断）
 ├── outsource_hook.py    ★ 外援自动触发：程序判「摇不摇」（要成段代码 / 左链检索不到 / 卡了明显时间）
-├── 定时.py              ★ 定时任务的框架接缝：启动重挂 / 开场取到点的 / 阻塞式就在这一轮里等（读秒吐给界面）
-├── 待注入.py            ★ 「下一轮开场说什么」的通道（冷库 PG 表 `inbox`）：定时和编排都往这一个口子丢
-├── 清单.py              ★ 编排的活儿单（冷库 PG 表 `orchestra`，按对话分行）+ 账（`对话账`：exec 次数 / 重策划次数）
-├── 库.py                ★ 冷库公用层：连接复用 / 文档表 / 执行查询 / `COLLAPLEX_DB_PREFIX` 沙盒前缀
+├── timers.py              ★ 定时任务的框架接缝：启动重挂 / 开场取到点的 / 阻塞式就在这一轮里等（读秒吐给界面）
+├── pending_injection.py            ★ 「下一轮开场说什么」的通道（冷库 PG 表 `inbox`）：定时和编排都往这一个口子丢
+├── manifest.py              ★ 编排的活儿单（冷库 PG 表 `orchestra`，按对话分行）+ 账（`对话账`：exec 次数 / 重策划次数）
+├── memory_store.py                ★ 冷库公用层：连接复用 / 文档表 / 执行查询 / `COLLAPLEX_DB_PREFIX` 沙盒前缀
 ├── native_marks.py      ★ 各家原生工具调用标记（小米 MiMo 的 XML / DeepSeek 的 DSML 方言 / DeepSeek 官方模板那套 <｜tool▁…｜>）：一处认全，exec 抠命令 / 落语料 / 导会话三处共用；另有 StreamFilter（边流边吐时把协议块整段扣住，web 的答案草稿走它）
 ├── tokenizer.py         ★ 本地分词器：纯 stdlib 复刻那份 tokenizer.json（`~/models/deepseek-v4-tokenizer/`），离线精确数 token —— 上下文预算不再靠"一字符一 token"粗估
-├── 算token.py           ★ 算 token 的命令行：文件 / 文本 / 目录 / 超上限标 ⚠ / `--在线` 跟 API 报的 prompt_tokens 对一下
+├── count_tokens.py           ★ 算 token 的命令行：文件 / 文本 / 目录 / 超上限标 ⚠ / `--在线` 跟 API 报的 prompt_tokens 对一下
 ├── watchdog.py          ★ 看门狗：盯 8790 / 8199 / 8791 / PG，挂了拉回来
 ├── selfcheck.py         30 项自检（过了就直接拉起 main；含定时那 3 项）
 ├── start_models.sh      拉本地模型（主模型 + 向量模型）
-├── 本地兜底.sh          ★ 主路不通 → 自动落本地那支
+├── local_fallback.sh          ★ 主路不通 → 自动落本地那支
 ├── pack_bundle.sh       打"解压即用"包（见 §八）
 ├── push_gitea.sh        按 skill 拆仓推 Gitea（见 §十一）
 ├── pyrightconfig.json   类型检查口径（strict；入口列全，新文件按目录自动纳入）
@@ -233,7 +233,7 @@ collaplex_agent/
 │   ├── outsource/       ★ 外援：卡住了摇云端强模型（默认 DeepSeek）干活（开关默认关 / 预算 + 记账 / ★ 误触发对照）
 │   ├── mtp/             ★ 交叉验证：同一题问多家模型，并排给答案 + 挑分歧（只在外援之后用）
 │   └── ops/             ★ **这套系统自己的使用与维护手册**（28 条）：起服务 / 网页与设置页 / 模型 / PG / 三层记忆与预算 / 清洗与嵌入 / 命令库与 skill 清单 / 外援·定时·编排·看图·搜索·长活 / 日志 / 自检与看门狗 / 配置 / 加 skill / 打包发布 / 排错对照
-├── web/                 ★ 浏览器入口（同一条链）：server / bridge / 启动.py ＋ 自带 tests
+├── web/                 ★ 浏览器入口（同一条链）：server / bridge / start.py ＋ 自带 tests
 │                        —— 编排清单显示在**输入框上面**（`GET /api/清单`，没清单整块 hidden、全好了自己消失）
 ├── config/              ★ 配置区：不写死在代码里
 │   ├── agent.json       skill 路径 / 超时 / 生成上限 / 黑名单 / 宽目标名单 / 界面文字
@@ -299,12 +299,12 @@ collaplex_agent/
 
 ## 五、核心代码量
 
-**Python 合计 33,661 行 / 138 个**（按目录列全；口径：框架 ＋ 解析器 ＋ 顶层 `tests/` ＋ skill 区 ＋ diagrams ＋ mvp_os，不含 venv / `__pycache__` / `_deprecated` / `state` / `dist` / `build-nuitka` / `vendor` / `web` / `实验`，行数按 `wc -l`）：
+**Python 合计 33,661 行 / 138 个**（按目录列全；口径：框架 ＋ parser ＋ 顶层 `tests/` ＋ skill 区 ＋ diagrams ＋ mvp_os，不含 venv / `__pycache__` / `_deprecated` / `state` / `dist` / `build-nuitka` / `vendor` / `web` / `实验`，行数按 `wc -l`）：
 
 ```
 框架与回归（三个 agent + 总入口 + 自检 + 分词器 + 外援触发 + 看门狗 + 回归/探针）  10,861 行
   sub_agent.py   1,546      检索 / 拼 skill / 预算 / 思考路由 / 入库（含给 exec 的命令库预检索）+ ★ 给分析/判断两步拼"上一轮"的上文块（追问题不断档）+ ★ 检索毛病攒成"这轮检索的实况"塞进主 agent 的 prompt（嵌入挂了不许答"我没有记忆"）
-  main.py        1,076      对话循环 / 流式 / ★ 末尾 json 拦截与兜底（`捞正文` 已是同名薄壳 —— 真逻辑在 `解析器/`：整段被围栏吃掉时也把内容捞回来, 绝不留下空答案）/ 递交 exec / ★ 外援自动触发的落点 / ★ 挑 skill 前先剔掉不可交办的件（元技能 · 花钱的）
+  main.py        1,076      对话循环 / 流式 / ★ 末尾 json 拦截与兜底（`捞正文` 已是同名薄壳 —— 真逻辑在 `parser/`：整段被围栏吃掉时也把内容捞回来, 绝不留下空答案）/ 递交 exec / ★ 外援自动触发的落点 / ★ 挑 skill 前先剔掉不可交办的件（元技能 · 花钱的）
   selfcheck.py   1,048      30 项自检（配置 / 模型 API GET / skill 依赖 / 库 / 代码 / 结构 / ★ 索引 / ★ 定时）
   tests/         5,055      回归 19 个（复读掐断 / 流式渲染（★ 含"整段被围栏吃掉也要捞回正文"）/ ★ 协议标记边流边吐 / 左链兜底（★ 含"不可交办的件不许派"）/ 清洗兜底（★ 已修 2026-10-11：夹具原来拿 8 维假向量直连生产表 —— expected 1024 dimensions, not 8，整份用例从第一条起全红；现把存储后端钉在 JSON 上，一个字节都不碰生产库）/ 自检依赖 / 思考路由 / ★ 定时接缝 / ★ 外援触发 / ★ DSML 标记 / ★ 官方模板标记 / ★ 本地分词器 / ★ 追问上文 / ★ 作业播报 / ★ 检索降级（把 `EMBEDDING_BASE_URL` 指到死端口：不许整条塌成 0 命中、要落关键词兜底、实况要带出去）/ ★ 库双后端（沙盒前缀 + 连接复用）/ ★ 清洗失败即停 / ★ 清洗并发文件（索引锁：去掉锁当场丢概述）/ ★ 拦截简报（自答那条出口也得带记忆，界面不许假报"记忆 0 条"））
                             ＋ 真跑探针 8 个（多轮 / 搜索四轮 / ★ 看图四轮 / 判断件 / 思考路由 / ★ DSML 复现 / ★ 解析层真机集成 —— 临时端口起 web、真模型跑一轮、核正文无 json 泄漏与存档 +1 / ★ 自回声对照 —— 3 题 × 2 版材料 × 2 支模型各答一遍，判"这是模型的锅还是供给的锅" / ★ skill 写法对照 —— 5 组 28 题 × 2 版写法 × 2 支模型，判"判别件吃不吃人格化" / ★ 输出形态观察 —— 4 版写法 × 4 个"说"场景 × 2 模型，看钢印式会不会自言自语 / ★ 叙事版（背景故事 + 零元话）：三版对照，潜暗示成立但契约被吃掉 / ★ 翻译件三级读回（叙事→结构化结论：87% / 73% / 57%）/ ★ 专用读回件（不用 JSON 契约也能到 96%））
@@ -313,20 +313,20 @@ collaplex_agent/
   native_marks.py  377      ★ 各家原生工具调用标记一处认全（小米 MiMo / DSML 方言 / ★ 官方模板那套）+ 语料防污染清法 + ★ 边流边吐过滤器（StreamFilter：草稿进正文区前把协议块整段扣住）
   outsource_hook.py 244     ★ 外援自动触发（程序判：要成段代码（两道）/ 左链检索不到 / 卡了明显时间）
   watchdog.py      273      ★ 看门狗：盯 8790 / 8199 / 8791 / PG，挂了拉回来
-  算token.py       179      ★ 算 token 的命令行：文件 / 文本 / 目录 / 超上限标 ⚠ / --在线 跟 API 报的 prompt_tokens 对一下
+  count_tokens.py       179      ★ 算 token 的命令行：文件 / 文本 / 目录 / 超上限标 ⚠ / --在线 跟 API 报的 prompt_tokens 对一下
   cli.py           115      ★ 总入口：`collaplex-agent web / 自检 / 模型 / chat` —— 一个命令管住所有启动方式
 
-解析器（★ 两层：一家一件的适配件 ＋ 模型无关的外壳）                       452 行
-  外壳.py            89      模型无关的最后一道：正文不许空 / 捞不回就端原文 / 一个字没吐就明说（找尾部JSON起点 · 围栏内容 · 从JSON里捞正文 · 把关 · 捞正文）
-  适配件/__init__.py  66      ★ 登记表（deepseek / mimo / qwen3）＋ 关键词匹配（`config/解析.json`；命中不了 → 只走外壳，不炸）
-  自测.py           120      ★ 逐家 × 逐样本对期望正文（11 条）＋ 关键词命中（6 条）；不用起 web、不用起模型
+parser（★ 两层：一家一件的适配件 ＋ 模型无关的外壳）                       452 行
+  shell.py            89      模型无关的最后一道：正文不许空 / 捞不回就端原文 / 一个字没吐就明说（找尾部JSON起点 · 围栏内容 · 从JSON里捞正文 · 把关 · 捞正文）
+  适配件/__init__.py  66      ★ 登记表（deepseek / mimo / qwen3）＋ 关键词匹配（`config/parsing.json`；命中不了 → 只走外壳，不炸）
+  selftest.py           120      ★ 逐家 × 逐样本对期望正文（11 条）＋ 关键词命中（6 条）；不用起 web、不用起模型
   __init__.py        60      `取干净(原文, 模型) → 结果(正文 / 说明 / 走了 / 家族)`；顺序 ①适配件 → ②外壳
   适配件/deepseek.py  35      DeepSeek：DSML 标记族 / 官方模板标记（识别与清洗归 `native_marks.py`，这里只记习惯 + 样本）
   适配件/mimo.py      32      小米 MiMo：整段回答被包进 json 围栏（★ 兜底归外壳）/ XML 那套工具调用
   适配件/qwen3.py     32      qwen3：思考走独立字段 `reasoning_content` / 偶尔吐空 · 复读（空正文由外壳兜底）
-  适配件/形状.py      18      适配件长什么样 = 一个 dataclass（家族 / 已知产出侧习惯 / 特化）
+  适配件/shape.py      18      适配件长什么样 = 一个 dataclass（家族 / 已知产出侧习惯 / 特化）
 
-  运行时几件      1,021      库.py 324（库名/表名自动挂沙盒前缀）· 定时.py 138（到点提醒）· 作业.py 291（★ 长活后台跑完再汇报）· 清单.py 209（对话内任务编排的清单）· 待注入.py 59（到点把主 agent 叫回来）
+  运行时几件      1,021      memory_store.py 324（库名/表名自动挂沙盒前缀）· timers.py 138（到点提醒）· jobs.py 291（★ 长活后台跑完再汇报）· manifest.py 209（对话内任务编排的清单）· pending_injection.py 59（到点把主 agent 叫回来）
 
 skill 区（程序）                     19,222 行 / 75 个
   rag/           4,746      chunker / embed / search / recall（★ 语义路不可用时落关键词兜底 ILIKE, 并把实况带出去） / refine（两层记忆 + 下水道）
@@ -349,26 +349,26 @@ skill 区（程序）                     19,222 行 / 75 个
   mvp_os.py         42      最早的单轮原型，留着当起点存档
 ```
 
-另有 shell 脚本 **857 行**（`push_gitea.sh` 236 推仓库/发 release · `pack_bundle.sh` 175 打"解压即用"包 · `start_models.sh` 141 管两个 llama.cpp 服务 · `本地兜底.sh` 43 主路不通自动落本地 · ★ `编译.sh` 27 用 Nuitka 编独立可执行件（自己 setsid 脱离会话, 长活不挂在 agent 下）· ★ `挂数据.sh` 54 把 config/state/logs/skill/.env 等挂进编译产物；skill 里另有 `自动灌语料.sh` 63 ＋ `embed_server.sh` ×2 共 118 行）。
+另有 shell 脚本 **857 行**（`push_gitea.sh` 236 推仓库/发 release · `pack_bundle.sh` 175 打"解压即用"包 · `start_models.sh` 141 管两个 llama.cpp 服务 · `local_fallback.sh` 43 主路不通自动落本地 · ★ `build.sh` 27 用 Nuitka 编独立可执行件（自己 setsid 脱离会话, 长活不挂在 agent 下）· ★ `mount_data.sh` 54 把 config/state/logs/skill/.env 等挂进编译产物；skill 里另有 `auto_ingest_corpus.sh` 63 ＋ `embed_server.sh` ×2 共 118 行）。
 提示词与文档（Markdown）**10,788 行**（含命令库；口径：`config/skills/` ＋ skill 文档（不含 `commands/`、`corpus/`）＋ `diagrams/*.md` ＋ 顶层（README ＋ CHANGELOG ＋ ★ 设计-思考路由 ＋ ★ 设计-外援与交叉比对）＋ `web/README.md` ＋ 命令库，2026-10-13 按同口径重数）：`config/skills/` 506（9 份）· skill 文档 2,360（34 份 —— 14 份 `SKILL.md` ＋ 各自的 README / CHANGELOG / 示例 / 用例）· 架构图与设计稿 1,718（`diagrams/*.md`）· 顶层 2,557（README 678 ＋ CHANGELOG 1543 ＋ ★ 设计-思考路由 116 ＋ ★ 设计-外援与交叉比对 220）· `web/README.md` 154 · **命令库 3,493 行 / 145 条**（`skill/linux/commands/*.md` 63 条 ＋ `skill/kali/commands/*.md` 15 条 ＋ `skill/file/commands/*.md` 16 条 ＋ `skill/math/commands/*.md` 12 条 ＋ `skill/search/commands/*.md` 9 条 ＋ `skill/vision/commands/*.md` 2 条 ＋ `skill/ops/commands/*.md` 28 条，一命令一文件）。
 
-**另有 `web/` 那层壳 5,746 行 / 11 个**（口径：`web/*.py` ＋ `web/static/*` 自己的件，**不含 `web/static/vendor/`（katex 26 个文件 2,329 行，第三方）** 与 `web/tests/`；`web/tests/` 是 14 个自测脚本、另 1,877 行，其中 ★`回归导入面.py` 把"往输入框塞本机路径"那一面 34 条一次跑全）—— 浏览器里那条入口（见 §七），按上面口径单列。
+**另有 `web/` 那层壳 5,746 行 / 11 个**（口径：`web/*.py` ＋ `web/static/*` 自己的件，**不含 `web/static/vendor/`（katex 26 个文件 2,329 行，第三方）** 与 `web/tests/`；`web/tests/` 是 14 个自测脚本、另 1,877 行，其中 ★`check_import_surface.py` 把"往输入框塞本机路径"那一面 34 条一次跑全）—— 浏览器里那条入口（见 §七），按上面口径单列。
 
-**骨架很小**：整套运行时的 Python 就 **31,557 行**（= 合计 33,661 − diagrams 2,104，设计稿生成器不算运行时），其中真正"框架"的部分 **12,334 行**（框架与回归 10,861 ＋ 解析器 452 ＋ 运行时几件 1,021）—— 剩下都是各管一摊、可单独替换的 skill。
+**骨架很小**：整套运行时的 Python 就 **31,557 行**（= 合计 33,661 − diagrams 2,104，设计稿生成器不算运行时），其中真正"框架"的部分 **12,334 行**（框架与回归 10,861 ＋ parser 452 ＋ 运行时几件 1,021）—— 剩下都是各管一摊、可单独替换的 skill。
 
 ### 编译成独立可执行件（Nuitka，★ 不含 skill）
 
 ```bash
-bash 编译.sh     # 自己 setsid 脱离会话跑（长活不挂 agent 下），日志 logs/编译.log，约 25 分钟
-bash 挂数据.sh    # 把数据树挂进产物目录（见下），一次就够，重编后要再跑一次
+bash build.sh     # 自己 setsid 脱离会话跑（长活不挂 agent 下），日志 logs/编译.log，约 25 分钟
+bash mount_data.sh    # 把数据树挂进产物目录（见下），一次就够，重编后要再跑一次
 编译产物/cli.dist/collaplex-agent 自检          # 编译版自检
 编译产物/cli.dist/collaplex-agent web --端口 8791
 ```
 
 - **skill 不编译**：`--nofollow-import-to=skill`，产物里 `skill` 是指回源目录的软链 —— **skill 改动即时生效，不用重编**。
-- **★ 挂数据这一步是必须的**：Nuitka 编译后每个模块的 `__file__` 都指向 dist 里的虚拟位置（实测 `<dist>/web/bridge.py`、`<dist>/解析器/适配件/__init__.py`），
+- **★ 挂数据这一步是必须的**：Nuitka 编译后每个模块的 `__file__` 都指向 dist 里的虚拟位置（实测 `<dist>/web/bridge.py`、`<dist>/parser/adapters/__init__.py`），
   而项目里一律用"自己文件所在目录"往上数来定项目根 ⇒ **dist 就是"项目根"**。所以把该在根下的东西（config / state / logs / skill / vendor / .venv / .env / icon.txt /
-  几个要被子进程调用的 `.py`）软链进 dist，**代码一行都不用改**；`web/static`、`web/vendor` 同理挂到 `<dist>/web/` 下。这就是 `挂数据.sh` 干的事。
+  几个要被子进程调用的 `.py`）软链进 dist，**代码一行都不用改**；`web/static`、`web/vendor` 同理挂到 `<dist>/web/` 下。这就是 `mount_data.sh` 干的事。
 - **★ 必须 `--include-package` 的那几个**：`openai / pydantic / anyio / jiter / sniffio / h11`（另加原有的 `numpy / psycopg / websocket`）。
   漏了 `openai` 的真实现：编译能过、首页也能开，但**真打一轮就炸** —— `ModuleNotFoundError: No module named 'openai.resources.chat.chat'`
   （openai 3.x 的懒加载子模块，`--follow-imports` 追不到），界面上表现为"模型一个字都没吐"。
@@ -568,7 +568,7 @@ PY -m web.server --端口 8791      # 换端口（纯标准库，零第三方依
 
 前端 md 渲染照 18 家 AI 产品扒来的四条硬规矩（细节见 `web/README.md` 与技能 `web-frontend-teardown`）：
 
-- 每帧把**整段 buffer** 丢给 CommonMark 解析器，**不自己写正则切 markdown**（未闭合的围栏/半截表格/公式由它容错）
+- 每帧把**整段 buffer** 丢给 CommonMark parser，**不自己写正则切 markdown**（未闭合的围栏/半截表格/公式由它容错）
 - **块级复用 DOM 节点**（key = 抛光前的原始 HTML），只有尾部在长
 - **新块淡入**（`.md-新`）；这轮结束挂 `.md-完成` 把动画全关
 - **后处理走 DOM**（代码头/复制按钮/表格外壳/外链），不碰字符串、跳过 `code`/`pre`

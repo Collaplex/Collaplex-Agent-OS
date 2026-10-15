@@ -7,7 +7,7 @@ PKG    := collaplex-agent-os
 DEST   := debian/$(PKG)
 TARGET := $(DEST)/usr/share/$(PKG)
 # ★ 交付形态: 默认源码树（.); 设了 SRC_TREE 就用那棵树 —— 字节码包是
-#   `SRC_TREE=dist/字节码树`（那棵树里 .py 全换成了 .pyc, 由 打包/字节码化.py 生成）。
+#   `SRC_TREE=dist/字节码树`（那棵树里 .py 全换成了 .pyc, 由 packaging/build_bytecode.py 生成）。
 SRC_TREE ?= .
 
 %:
@@ -33,7 +33,7 @@ override_dh_auto_install:
 	  --exclude=./out --exclude='./skill/rag/corpus/*' --exclude='./skill/*/cache' \
 	  --exclude=./skill/search/logs --exclude=./skill/vision/logs \
 	  --exclude='./skill/vision/tests/样本' \
-	  --exclude='./skill/rag/scripts/_json-退役备份' \
+	  --exclude='./skill/rag/scripts/_json-retired-backup' \
 	  --exclude='*.crv' --exclude=.carve-backups --exclude='*.restored' \
 	  . | tar -C $(TARGET) -xf -
 	# 被排掉的空目录补回来(运行时挂 /var/lib, 见 postinst)

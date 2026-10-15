@@ -20,10 +20,10 @@ import openai
 import exec_agent
 import outsource_hook
 import sub_agent
-import 定时
-import 待注入
-import 清单
-import 解析器
+import timers as 定时
+import pending_injection as 待注入
+import manifest as 清单
+import parser as parser
 
 # ★ 行编辑：不 import readline 时 input() 不具备行编辑能力 —— 方向键会被当作普通字符
 # 打进输入行里(实测回显 'ab^[[C'), 退格也只由终端擦最后一个字符、跟光标脱节(看着就像"退格有 bug")。
@@ -102,17 +102,17 @@ def find_tail_json(text: str) -> int | None:
     围栏, 直接认这个围栏就行。取最后一个: 正文里就算夹着同款, 末尾那个也只会更靠后。
     模型偶尔会在 ```json 前面多吐一个空围栏, 一起藏掉。
     """
-    return 解析器.找尾部JSON起点(text)
+    return parser.找尾部JSON起点(text)
 
 
 def 围栏内容(text: str) -> str:
     """取出第一段 ``` 围栏内的内容（末尾那段 json 标记就长这样）。"""
-    return 解析器.围栏内容(text)
+    return parser.围栏内容(text)
 
 
 def 从JSON里捞正文(块: str) -> str:
     """整段被围栏吃掉时，尝试从该 json 中提取答案（识别几个常见键）。"""
-    return 解析器.从JSON里捞正文(块)
+    return parser.从JSON里捞正文(块)
 
 
 def 捞正文(text: str) -> tuple[str, str]:
@@ -126,10 +126,10 @@ def 捞正文(text: str) -> tuple[str, str]:
       提取不到则将原文整段展示出来 —— 宁可难看，也不让这一轮凭空消失。
     说明非空 = 走了兜底，调用方该把这句话报给界面/终端。
 
-    ★ 兜底逻辑与两层的分工都在 `解析器/`（① 一家一件的适配件 → ② 模型无关的外壳），
+    ★ 兜底逻辑与两层的分工都在 `parser/`（① 一家一件的适配件 → ② 模型无关的外壳），
       此处只是同名薄壳转发 —— 老调用点与回归用例均无需改动。
     """
-    return 解析器.捞正文(text)
+    return parser.捞正文(text)
 
 
 def read_task_flag(answer: str) -> bool | None:
@@ -575,7 +575,7 @@ def preflight() -> None:
         for x in 坏的:
             print(f"    {x}")
         print("  嵌入服务不在时，**检索 skill 一定失败**，我可能会把答案编出来而不是去查。")
-        print("  起法：./start_models.sh start   （或 ./本地兜底.sh 切到别的端点）")
+        print("  起法：./start_models.sh start   （或 ./local_fallback.sh 切到别的端点）")
         print("=" * 80)
 
 
