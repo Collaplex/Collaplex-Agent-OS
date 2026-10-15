@@ -1,0 +1,47 @@
+{
+  "name": "outsource",
+  "version": "1.0.0",
+  "description": "外援：小模型拿不准时把一件明确的活交给云端强模型（默认 DeepSeek）做，拿回能直接用的产出。会花钱。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "commands": [
+    {
+      "name": "ask",
+      "file": "scripts/ask.py",
+      "usage": "ask \"<任务>\" [--声明 \"...\"] [--家 deepseek|mimo] [--强制] [--安静]",
+      "note": "摇人干活；受开关与日预算约束，--强制 只跳开关不跳预算；产出与记账都落盘"
+    },
+    {
+      "name": "status",
+      "file": "scripts/status.py",
+      "usage": "status [--json]",
+      "note": "看开关、今天花了几毛、各路凭据在不在（只报在不在，不打印值）"
+    }
+  ],
+  "needs": {
+    "env": [
+      "DEEPSEEK_API_KEY",
+      "DEEPSEEK_BASE_URL"
+    ],
+    "config": "resources/outsource.json",
+    "env_optional": [
+      "MIMO_API_KEY",
+      "MIMO_BASE_URL"
+    ]
+  },
+  "houses": {
+    "deepseek": "主力（默认家），余额宽裕价低；凭据 DEEPSEEK_*",
+    "mimo": "第二路，也给交叉验证用；凭据 MIMO_*；余额紧，别当主力"
+  },
+  "judgement_order": [
+    "主 agent 自己判（它最清楚要什么）",
+    "程序判（空答 / 报错 / 超时 —— 就在 scripts/ask.py 里）",
+    "子 agent 兜底"
+  ],
+  "io": {
+    "read_only": false,
+    "writes": [
+      "logs/outsource/（产出 .md + 记账 用量.jsonl）"
+    ]
+  }
+}

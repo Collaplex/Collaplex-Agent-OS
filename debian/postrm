@@ -1,0 +1,16 @@
+#!/bin/sh
+# 卸载收尾: remove 清掉运行时(venv 是 postinst 生成的, 不在包清单里, 不删会留一地);
+#          purge 再把状态与凭据一起清掉。
+set -e
+PKG=collaplex-agent-os
+
+case "$1" in
+remove)
+    rm -rf "/usr/share/$PKG/.venv"
+    ;;
+purge)
+    rm -rf "/var/lib/$PKG" "/etc/$PKG"
+    ;;
+esac
+
+exit 0

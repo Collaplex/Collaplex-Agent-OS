@@ -1,0 +1,31 @@
+<mxfile host="65bd71144e">
+    <diagram id="7LxEL5ey3-jdMmY1M3zw" name="第 1 页">
+        <mxGraphModel dx="1696" dy="866" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-4" edge="1" parent="1" source="sg1pXfpvk_Rp67nShxp6-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="sg1pXfpvk_Rp67nShxp6-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-5" edge="1" parent="1" source="sg1pXfpvk_Rp67nShxp6-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="sg1pXfpvk_Rp67nShxp6-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="热层" vertex="1">
+                    <mxGeometry height="60" width="120" x="340" y="240" as="geometry"/>
+                </mxCell>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="经验层（原冷层）" vertex="1">
+                    <mxGeometry height="60" width="120" x="340" y="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="带时间线的所有历史对话" vertex="1">
+                    <mxGeometry height="60" width="120" x="490" y="360" as="geometry"/>
+                </mxCell>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-7" edge="1" parent="1" source="sg1pXfpvk_Rp67nShxp6-6" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="sg1pXfpvk_Rp67nShxp6-1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="sg1pXfpvk_Rp67nShxp6-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="模型上下文窗口" vertex="1">
+                    <mxGeometry height="60" width="120" x="340" y="130" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

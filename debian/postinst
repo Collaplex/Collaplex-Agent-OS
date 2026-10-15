@@ -1,0 +1,89 @@
+#!/bin/sh
+# Collaplex Agent OS —— 装完只做三件事: 建运行时 / 挂可写目录 / 备好凭据位。
+# ★ 不启动任何服务、不 enable 任何东西、不写用户配置 —— 要跑自己跑那条命令。
+set -e
+PKG=collaplex-agent-os
+ROOT=/usr/share/$PKG
+VENV=$ROOT/.venv
+DATA=/var/lib/$PKG
+CONF=/etc/$PKG
+OWNER="${SUDO_USER:-}"
+
+case "$1" in
+configure)
+    # ① 运行时: venv + 依赖(openai / python-dotenv / numpy / psycopg[binary] / websocket-client)
+    #    ★ psycopg 与 websocket-client 是干净机上跑自检抓出来的漏登记(库.py 顶层 import psycopg)
+    #    直连优先, 超时/失败自动切清华镜像 —— 与 collaplex-audio / 7z-encrypt 同一套
+    if [ ! -x "$VENV/bin/python" ]; then
+        python3 -m venv "$VENV" || true
+    fi
+    if [ -x "$VENV/bin/pip" ]; then
+        "$VENV/bin/pip" install --quiet -r "$ROOT/requirements.txt" 2>/dev/null \
+          || "$VENV/bin/pip" install --quiet -i https://pypi.tuna.tsinghua.edu.cn/simple \
+                 -r "$ROOT/requirements.txt" \
+          || echo "  [警告] 依赖没装上 —— 联网后手动跑: $VENV/bin/pip install -r $ROOT/requirements.txt" >&2
+    else
+        echo "  [警告] venv 没建起来(python3-venv 缺失?) —— 装完手动跑: python3 -m venv $VENV" >&2
+    fi
+
+    # ② 可写目录挂到 /var/lib: 源码目录只读, 而记忆库/日志/倒排缓存都要能写
+    for p in state logs pycache skill/rag/corpus \
+             skill/linux/cache skill/file/cache skill/math/cache skill/kali/cache \
+             skill/search/cache skill/search/logs skill/vision/cache skill/vision/logs \
+             skill/ops/cache \
+             skill/vision/tests/样本 skill/timer/cache skill/orchestra/cache; do
+        install -d -m 0755 "$DATA/$p"
+        # 包里可能留了同名空目录 —— 得先挪开, 否则 ln 会把链接塞进目录里
+        if [ -d "$ROOT/$p" ] && [ ! -L "$ROOT/$p" ]; then
+            rmdir "$ROOT/$p" 2>/dev/null || true
+        fi
+        ln -sfn "$DATA/$p" "$ROOT/$p"
+    done
+
+    # ③ 凭据位: /etc 一份, 代码旁的 .env 指过去(程序按 __file__ 找 .env)
+    #    ★ 这份必须让"跑程序的那个用户"读得到: 留 root 0600 的话, 普通用户一跑就是
+    #      PermissionError: [Errno 13] '/usr/share/<pkg>/.env'(干净机首次实测踩到)
+    install -d -m 0755 "$CONF"
+    [ -e "$CONF/env" ] || install -m 0600 /dev/null "$CONF/env"
+    if [ -n "$OWNER" ] && id "$OWNER" >/dev/null 2>&1; then
+        chown "$OWNER" "$CONF/env"
+        chmod 0600 "$CONF/env"
+    else
+        # 不是 sudo 装的(没人可托付)时至少让程序读得到; 里面是模型凭据, 多用户机自行收紧
+        chmod 0644 "$CONF/env"
+    fi
+    ln -sfn "$CONF/env" "$ROOT/.env"
+
+    # ④ 谁装的就把状态目录给谁: 单机自用, 不给的话跑起来写不进去
+    if [ -n "$OWNER" ] && id "$OWNER" >/dev/null 2>&1; then
+        chown -R "$OWNER" "$DATA" 2>/dev/null || true
+    fi
+
+    # ⑤ 菜单图标与桌面入口: 这两样是 rules 里手动 install 的, 未必触发 dpkg 的触发器
+    #    —— 装完自己刷一次(刷不动不拦, 下次登录也会重建)
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor 2>/dev/null || true
+    fi
+    if command -v update-desktop-database >/dev/null 2>&1; then
+        update-desktop-database -q /usr/share/applications 2>/dev/null || true
+    fi
+
+    echo "  Collaplex Agent OS 已就位:"
+    echo "    命令      collaplex-agent [web | 自检 | 模型 start|stop|status | chat]"
+    echo "    菜单      应用列表里找「Collaplex Agent OS」(图标已装进 hicolor 主题)"
+    echo "    凭据      $CONF/env     (照 $ROOT/.env.example 填, 模式 600)"
+    echo "    状态/记忆 $DATA"
+    echo "    模型服务  不在包里 —— 见 $ROOT/README.md「快速开始」"
+    echo
+    echo "  首次部署还有三件事(缺哪件 \"自检\" 都会点名):"
+    echo "    1) 记忆库要 PostgreSQL + pgvector(pgvector 装上还得在库里 CREATE EXTENSION vector),"
+    echo "       并在 $CONF/env 里填 RAG_PG_DSN;"
+    echo "    2) ★ 空库要先建表 —— 程序自己建不起来(先读后建的顺序问题), 照抄命令见:"
+    echo "         $ROOT/首次部署.md"
+    echo "    3) DEEPSEEK_* / MIMO_* 只有富余的外援 skill 用, 按需再填"
+    ;;
+abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+esac
+
+exit 0

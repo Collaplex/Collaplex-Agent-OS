@@ -1,0 +1,25 @@
+# Collaplex Agent 的直接依赖 —— 就这四个, 没有别的
+#
+# ★ 2026-10-10 补记: psycopg 一直漏登记。干净 Debian 上装完跑 `collaplex-agent 自检`
+#   第一句就 ModuleNotFoundError: No module named 'psycopg'(库.py:25 顶层 import)。
+#   它是硬依赖 —— 库.py 与 skill/rag/scripts/store.py 都在模块顶层 import 它,
+#   少了的话连自检都起不来, 不是"记忆不可用"那么轻。打包(dist/)那份同病。
+#
+# 装: uv venv && uv pip install -r requirements.txt
+#
+# 模型调用 (本地 llama.cpp / 任意 OpenAI 兼容服务)
+openai>=3.24.0
+
+# .env 读取 —— 所有模型配置都从这里来
+python-dotenv>=1.2.4
+
+# 向量检索 (两层记忆库)
+numpy>=2.5.3
+
+# 两层记忆库落 PostgreSQL —— 库.py / skill/rag 顶层 import, 硬依赖
+# [binary] 拉预编译 wheel, 目标机不用装 libpq-dev
+psycopg[binary]>=3.2.0
+
+# 浏览器探针(skill/search/scripts/browser.py 驱动 CDP) —— 运行时依赖, 不是测试专用
+# ★ 2026-10-10: 自检的「skill 用到的 python 包都在」点名缺它, 先前漏登记
+websocket-client>=1.7

@@ -1,0 +1,690 @@
+/* Collaplex 网页版 —— 观感与自家页面一致(色板取官网 theme.css), 排版数值取 2026-10-07 拆出来的那套 */
+
+:root {
+  --bg: #0f0f0f;
+  --card: #161616;
+  --card-hi: #1c1c1c;
+  --bd: #262626;
+  --bd-hi: #343434;
+  --fg: #e8e8e8;
+  --mut: #8a8a8a;
+  --dim: #666;
+  --ok: #4ade80;
+  --warn: #f87171;
+  --r: 12px;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.7 -apple-system, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 左侧栏: 品牌 + 历史记录 + 设置 ───────────────── */
+:root { --栏宽: 238px; }
+
+.侧栏 {
+  position: fixed; left: 0; top: 0; bottom: 0; z-index: 30;
+  width: var(--栏宽);
+  display: flex; flex-direction: column;
+  border-right: 1px solid var(--bd);
+  background: #141414;      /* 比主区 #0f0f0f 亮半档, 分区不用只靠一根竖线 */
+}
+.主区 { margin-left: var(--栏宽); }
+
+.品牌 { display: flex; align-items: center; gap: 10px; padding: 16px 16px 14px; }
+.品牌 .名 { font-size: 14.5px; font-weight: 600; letter-spacing: .2px; }
+
+.栏题 {
+  padding: 6px 16px; font-size: 11.5px; color: var(--dim);
+  letter-spacing: .6px;
+}
+.历史 { flex: 1; overflow-y: auto; padding: 0 8px 8px; }
+.史空 { color: var(--dim); font-size: 12.5px; padding: 8px; }
+.史项 {
+  display: block; width: 100%; text-align: left;
+  background: none; border: 0; border-radius: 8px;
+  color: var(--fg); padding: 8px 10px; margin: 0 0 2px;
+  font: inherit; font-size: 13px; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.史项:hover { background: var(--card-hi); }
+.史项.当前 { background: var(--card-hi); box-shadow: inset 2px 0 0 var(--ok); }
+.史时 { display: block; color: var(--dim); font-size: 12px; margin-top: 2px; }
+
+.侧底 { border-top: 1px solid var(--bd); padding: 10px 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.栏钮 {
+  width: 100%; text-align: left;
+  background: var(--card); color: var(--fg); border: 1px solid var(--bd);
+  border-radius: 9px; padding: 8px 11px; font: inherit; font-size: 13px; cursor: pointer;
+}
+.栏钮:hover { background: var(--card-hi); }
+.栏钮.在 { border-color: var(--ok); color: var(--ok); }
+.小字 { font-size: 12px; }
+
+/* ── 懒加载哨兵 / 跳转高亮 ─────────────────────── */
+.更早 { height: 26px; display: flex; align-items: center; justify-content: center; color: var(--dim); font-size: 12.5px; }
+.轮.跳着 { outline: 1px solid var(--ok); outline-offset: 12px; border-radius: 8px; }
+
+/* ── 设置页 ───────────────────────────────────── */
+.设置页 { max-width: 1120px; margin: 0 auto; padding: 26px 20px 70px; }
+/* 设置页分栏: 左边一排入口(点了换右区), 右边只放当前这一节 —— 页面就不会拉得老长 */
+.设壳 { display: flex; gap: 26px; align-items: flex-start; }
+.设栏 {
+  flex: none; width: 128px; position: sticky; top: 64px;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.设钮 {
+  text-align: left; background: transparent; border: 0;
+  border-left: 2px solid transparent; border-radius: 0 8px 8px 0;
+  color: var(--mut); font: 13.5px inherit; padding: 8px 10px; cursor: pointer;
+}
+.设钮:hover { color: var(--fg); background: var(--card); }
+.设钮.在 { color: var(--ok); border-left-color: var(--ok); background: #12211a; }
+.设区 { flex: 1; min-width: 0; }
+@media (max-width: 620px) {
+  .设壳 { flex-direction: column; gap: 14px; }
+  .设栏 { position: static; width: 100%; flex-direction: row; flex-wrap: wrap; }
+  .设钮 { border-left: 0; border-bottom: 2px solid transparent; border-radius: 8px 8px 0 0; }
+  .设钮.在 { border-left-color: transparent; border-bottom-color: var(--ok); }
+}
+
+.设头 h2 { font-size: 19px; font-weight: 600; margin: 0 0 8px; }
+.设头 p { color: var(--mut); font-size: 12.5px; line-height: 1.75; margin: 0; }
+
+.设节 {
+  background: var(--card); border: 1px solid var(--bd); border-radius: var(--r);
+  padding: 16px 18px; margin: 20px 0 0;
+}
+.设节题 { font-size: 13.5px; color: var(--ok); margin: 0 0 4px; letter-spacing: .3px; }
+.设节注 { color: var(--dim); font-size: 12px; margin: 0 0 14px; line-height: 1.75; }
+
+.设表 { display: flex; flex-direction: column; }
+.设表行 {
+  display: grid; grid-template-columns: 232px minmax(0, 1fr) 172px 214px;
+  gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid #1d1d1d;
+}
+.设表行.头行 { border-top: 0; padding: 0 0 6px; color: var(--dim); font-size: 11.5px; }
+.设支 { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.设支名 { font-size: 13.5px; }
+.设支名 .跟 { display: block; color: var(--dim); font-size: 11.5px; margin-top: 2px; }
+.设支注 { color: var(--mut); font-size: 12px; line-height: 1.5; }
+input.设框 {
+  width: 100%; background: #101010; color: var(--fg);
+  border: 1px solid var(--bd-hi); border-radius: 8px; padding: 7px 10px;
+  font: 12px/1.5 var(--mono);
+}
+input.设框::placeholder { color: #565656; }
+input.设框.密钥::placeholder { color: #4c4c4c; }
+input.设框:focus { outline: none; border-color: var(--ok); }
+
+/* Skill 节那排(.技行)跟配置开关(.开关行)长得一样, 但类名必须分开:
+   铺设置 那句"记改动"是按 .开关行 抓的, 混用会把 skill 开关也粘上"保存"条。 */
+.开关行, .技行 { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-top: 1px solid #1d1d1d; }
+.开关行:first-of-type, .技行:first-of-type { border-top: 0; }
+.开关文, .技文 { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.开关名, .技名 { font-size: 13.5px; }
+.开关注, .技注 { color: var(--mut); font-size: 12px; line-height: 1.5; }
+.开关字, .技字 { flex: none; width: 16px; text-align: right; color: var(--dim); font-size: 12px; }
+.开关行 input, .技行 input {
+  appearance: none; flex: none; width: 42px; height: 23px; border-radius: 12px;
+  background: #232323; border: 1px solid var(--bd-hi); position: relative; cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.开关行 input::after, .技行 input::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 17px; height: 17px;
+  border-radius: 50%; background: #777; transition: left .15s, background .15s;
+}
+.开关行 input:checked, .技行 input:checked { background: #10291b; border-color: #1f6b3f; }
+.开关行 input:checked::after, .技行 input:checked::after { left: 21px; background: var(--ok); }
+/* 关掉的 skill: 名字划掉、整体压暗, 一眼看出它不参与 */
+.技行.已关 .技文, .技行.已关 .技字 { opacity: .5; }
+.技行.已关 .技名 { text-decoration: line-through; }
+
+.保条 { display: flex; align-items: center; gap: 14px; margin: 20px 0 4px; }
+.保钮 {
+  background: var(--ok); color: #06210f; border: 0; border-radius: 9px;
+  padding: 10px 24px; font: 600 13.5px inherit; cursor: pointer;
+}
+.保钮:disabled { background: #1b2620; color: #4d6b57; cursor: default; }
+.设果 { font-size: 12.5px; color: var(--mut); line-height: 1.8; }
+.设果 .行 { display: block; color: var(--ok); }
+.设果 .坏 { display: block; color: var(--warn); }
+.设卡 {
+  background: #121212; border: 1px solid #202020; border-radius: var(--r);
+  padding: 14px 16px; margin: 0 0 14px;
+}
+.设题 { font-size: 13px; color: var(--mut); letter-spacing: .4px; margin: 0 0 10px; }
+.设行 { display: flex; gap: 12px; padding: 4px 0; font-size: 13.5px; border-top: 1px solid #1d1d1d; }
+.设行:first-of-type { border-top: 0; }
+.设键 { color: var(--mut); flex: none; min-width: 168px; }
+.设值 { color: var(--fg); font-family: var(--mono); font-size: 12.5px; word-break: break-all; }
+.设值.开 { color: var(--ok); }
+.设值.关 { color: var(--dim); }
+
+/* ── 顶栏 ─────────────────────────────────────── */
+.顶栏 {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; padding: 10px 20px;
+  background: rgba(15, 15, 15, .86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--bd);
+}
+.页眉 {
+  font-size: 13px; color: var(--mut); letter-spacing: .3px;
+  flex: 1; min-width: 0;                    /* 撑开中段, 会话名长了也不会顶掉右侧 */
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* 收起/展开侧栏 —— body.收栏 时侧栏滑出, 主区顶上 */
+.收栏钮 {
+  flex: none; width: 27px; height: 27px; padding: 0;
+  background: transparent; color: var(--mut);
+  border: 1px solid var(--bd); border-radius: 8px;
+  font-size: 13px; line-height: 1; cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.收栏钮:hover { color: var(--fg); border-color: var(--bd-hi); background: var(--card-hi); }
+.侧栏 { transition: transform .18s ease; }
+.主区 { transition: margin-left .18s ease; }
+body.收栏 .侧栏 { transform: translateX(-100%); }
+body.收栏 .主区 { margin-left: 0; }
+.牌 { display: flex; align-items: center; gap: 9px; }
+.点名, .名 { font-weight: 600; letter-spacing: .2px; }
+.标 { width: 27px; height: 27px; border-radius: 7px; flex: none; display: block; }
+.点 { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); flex: none; }
+.点.亮 { background: var(--ok); box-shadow: 0 0 8px rgba(74, 222, 128, .6); }
+.点.灭 { background: var(--warn); }
+.右 { display: flex; align-items: center; gap: 14px; font-size: 12.5px; }
+.灰 { color: var(--mut); }
+.小按钮 {
+  background: var(--card-hi); color: var(--fg);
+  border: 1px solid var(--bd-hi); border-radius: 8px;
+  padding: 5px 12px; font-size: 12.5px; cursor: pointer;
+}
+.小按钮:hover { border-color: #4a4a4a; }
+
+/* ── 主区 ─────────────────────────────────────── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 26px 20px 190px;
+}
+
+.空态 { padding: 44px 4px; }
+.空态 h1 { font-size: 25px; line-height: 1.4; margin: 0 0 10px; font-weight: 600; }
+.空态 p { margin: 0 0 22px; }
+.示例 { display: flex; flex-direction: column; gap: 9px; align-items: flex-start; }
+.示例 button {
+  background: var(--card); color: var(--fg);
+  border: 1px solid var(--bd); border-radius: 10px;
+  padding: 9px 14px; font-size: 13.5px; cursor: pointer; text-align: left;
+}
+.示例 button:hover { background: var(--card-hi); border-color: var(--bd-hi); }
+
+.轮 { margin: 0 0 42px; }
+.问 {
+  margin: 0 0 14px auto;
+  max-width: 78%;
+  width: fit-content;
+  background: var(--card-hi);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── 过程面板 ─────────────────────────────────── */
+.过程 {
+  margin: 0 0 14px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: #121212;
+  font-size: 12.5px;
+}
+.过程 > summary {
+  cursor: pointer; padding: 7px 12px; color: var(--mut);
+  list-style: none; user-select: none;
+}
+.过程 > summary::-webkit-details-marker { display: none; }
+.过程 > summary::before { content: "▸ "; color: var(--dim); }
+.过程[open] > summary::before { content: "▾ "; }
+.过程体 { padding: 2px 12px 10px; border-top: 1px solid var(--bd); }
+.步 { display: flex; gap: 9px; padding: 2px 0; align-items: flex-start; }
+.步名 { flex: none; width: 34px; color: var(--dim); font-size: 11.5px; line-height: 1.9; }
+.步文 { white-space: pre-wrap; word-break: break-word; color: #b9b9b9; }
+.步暗 .步文 { color: var(--dim); }
+.步命令 .步文 { font-family: var(--mono); color: #bbf7d0; }
+.步读秒 .步文 { font-family: var(--mono); color: #bbf7d0; }   /* 定时读秒: 同一格原地改写 */
+.步声明 .步文 { color: #bbf7d0; }
+.步输出 .步文 {
+  font-family: var(--mono); font-size: 12px;
+  background: #0c0c0c; border: 1px solid var(--bd); border-radius: 6px;
+  padding: 6px 9px; max-height: 210px; overflow: auto;
+  display: block; white-space: pre; width: 100%;
+}
+.步错 .步文 { color: var(--warn); }
+
+/* ── markdown 正文 ────────────────────────────── */
+.md { font-size: 16px; line-height: 28px; word-wrap: break-word; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+
+.md p { margin: 0 0 10px; }
+.md h1, .md h2, .md h3, .md h4, .md h5, .md h6 {
+  margin: 24px 0 16px; font-weight: 600; line-height: 1.25;
+}
+.md h1 { font-size: 1.5em; }
+.md h2 { font-size: 1.3em; }
+.md h3 { font-size: 1.12em; }
+.md h4, .md h5, .md h6 { font-size: 1em; }
+.md ul, .md ol { margin: 0 0 10px; padding-left: 1.9em; }
+.md li > p { margin-top: 16px; }
+.md li + li { margin-top: 2px; }
+.md blockquote {
+  margin: 0 0 12px; padding: 2px 14px;
+  border-left: 3px solid var(--bd-hi); color: var(--mut);
+}
+.md hr { border: 0; border-top: 1px solid var(--bd); margin: 20px 0; }
+.md a { color: #7dd3fc; text-decoration: none; border-bottom: 1px solid rgba(125, 211, 252, .3); }
+.md a:hover { border-bottom-color: #7dd3fc; }
+.md img { max-width: 100%; border-radius: 8px; }
+
+.md code {
+  font-family: Consolas, Monaco, "JetBrains Mono", monospace;
+  font-size: .9em;
+  background: #202020; border: 1px solid #2a2a2a;
+  border-radius: 5px; padding: 1px 5px;
+}
+.md pre code { background: none; border: 0; padding: 0; font-size: 12.8px; line-height: 1.65; }
+
+/* 代码块外壳(语言名 + 复制) */
+.代码块 {
+  margin: 0 0 14px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: #121212;
+  overflow: hidden;
+}
+.代码头 {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 32px; padding: 0 12px;
+  background: #171717; border-bottom: 1px solid var(--bd);
+}
+.语言 { font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); }
+.复制按钮 {
+  background: transparent; border: 1px solid transparent; border-radius: 6px;
+  color: var(--dim); font-size: 11.5px; padding: 2px 8px; cursor: pointer;
+  opacity: .5; transition: opacity .18s, color .18s;
+}
+.代码块:hover .复制按钮 { opacity: 1; }
+.复制按钮:hover { color: var(--fg); border-color: var(--bd-hi); }
+.md pre {
+  margin: 0; padding: 12px 14px;
+  /* ★ 长行换行不横向裁: 命令输出那种一行的长 JSON, 横滚等于看不见 */
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 表格: 外面套一层能横向滚的(别撑破容器) */
+.表壳 { overflow-x: auto; margin: 0 0 14px; }
+.md table { border-collapse: collapse; width: max-content; min-width: 60%; font-size: 14px; }
+.md th, .md td { border: 1px solid var(--bd); padding: 7px 11px; text-align: left; }
+.md thead th { background: var(--card-hi); font-weight: 600; }
+.md tbody tr:nth-child(2n) { background: rgba(255, 255, 255, .015); }
+
+/* 公式 */
+.数学块 { overflow-x: auto; margin: 4px 0 14px; text-align: center; }
+.数学错 { color: var(--warn); }
+
+/* ── 流式: 新块淡入一次; 这轮完就把动画全关 ─────── */
+@keyframes 淡入 { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.md-新 { animation: 淡入 .3s cubic-bezier(.22, .61, .36, 1) both; }
+.md-完成, .md-完成 * { animation: none !important; transition: none !important; }
+
+/* ── 底栏 ─────────────────────────────────────── */
+/* ── 编排清单（输入框上面那个面板；没清单整块 hidden）── */
+.清单栏 {
+  margin: 0 0 8px;
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  background: var(--card);
+  overflow: hidden;
+  font-size: 13px;
+}
+.清单头 {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 10px; cursor: pointer; color: var(--fg);
+}
+.清单折 { color: var(--dim); font-size: 12px; }
+.清单行 { display: flex; gap: 8px; align-items: baseline; padding: 4px 10px; color: var(--mut); }
+.清单号 { width: 1.6em; text-align: right; color: var(--dim); }
+.清单说 { flex: 1; min-width: 0; }
+.清单态 { color: var(--dim); font-size: 12px; white-space: nowrap; }
+.清单行.状-在做 { color: var(--fg); }
+.清单行.状-在做 .清单态 { color: var(--ok); }
+.清单行.状-好了 { color: var(--dim); text-decoration: line-through; }
+.清单行.状-卡住 { color: #f0a35e; }
+
+
+.底栏 {
+  position: fixed; left: var(--栏宽); right: 0; bottom: 0; z-index: 20;
+  padding: 12px 20px 10px;
+  background: linear-gradient(rgba(15, 15, 15, 0), rgba(15, 15, 15, .97) 26%);
+}
+#问表 {
+  max-width: 860px; margin: 0 auto;
+  display: flex; gap: 10px; align-items: flex-end;
+  background: var(--card); border: 1px solid var(--bd-hi);
+  border-radius: 14px; padding: 9px 9px 9px 14px;
+}
+#问表:focus-within { border-color: #4a4a4a; }
+#问框 {
+  flex: 1; resize: none; border: 0; outline: none; background: transparent;
+  color: var(--fg); font: inherit; line-height: 1.6;
+  max-height: 220px; padding: 5px 0;
+}
+#问框::placeholder { color: var(--dim); }
+#发送 {
+  flex: none; background: transparent; color: var(--ok);
+  border: 1px solid var(--ok); border-radius: 10px; padding: 9px 18px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+#发送:hover:not(:disabled) { background: rgba(74, 222, 128, .13); }
+#发送:active:not(:disabled) { background: rgba(74, 222, 128, .22); }
+#发送:disabled { opacity: .45; cursor: default; border-color: var(--bd-hi); color: var(--dim); }
+.脚注灰 {
+  max-width: 860px; margin: 7px auto 0;
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: 11.5px; color: var(--dim);
+}
+
+#到底 {
+  position: fixed; right: 24px; bottom: 118px; z-index: 21;
+  background: var(--card-hi); color: var(--fg);
+  border: 1px solid var(--bd-hi); border-radius: 999px;
+  padding: 7px 14px; font-size: 12.5px; cursor: pointer;
+}
+
+@media (max-width: 620px) {
+  main { padding: 18px 14px 180px; }
+  .问 { max-width: 92%; }
+  .右 .灰 { display: none; }
+}
+
+/* ───────────── 设置页·数据库（表格化 + 手动搜索）───────────── */
+/* 观感跟着 .设置页 那套走: 同一套色板/圆角/等宽字体, 绿只用在"活的"东西上 */
+.库概 {
+  font-family: var(--mono); font-size: 12.5px; color: var(--ok);
+  background: #0d2818; border: 1px solid #166534; border-radius: 8px;
+  padding: 8px 12px; margin: 0 0 12px; line-height: 1.6;
+}
+.库概.坏 { color: var(--warn); background: #2a1414; border-color: #7a2c2c; }
+.库栏 { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 10px; }
+.库框 {
+  background: var(--card); border: 1px solid var(--bd); border-radius: 8px;
+  color: var(--fg); font-family: var(--mono); font-size: 12.5px;
+  padding: 7px 10px; min-width: 200px;
+}
+.库框.宽 { flex: 1 1 260px; min-width: 240px; }
+.库框:focus { outline: 0; border-color: var(--ok); }
+.库选 {
+  background: var(--card); border: 1px solid var(--bd); border-radius: 8px;
+  color: var(--fg); font-family: var(--mono); font-size: 12.5px; padding: 7px 8px;
+}
+.库刷 {
+  background: transparent; border: 1px solid var(--ok); border-radius: 8px;
+  color: var(--ok); font-family: var(--mono); font-size: 12.5px;
+  padding: 7px 13px; cursor: pointer;
+}
+.库刷:hover:not(:disabled) { background: #12211a; }
+.库刷:disabled { opacity: .35; cursor: default; }
+.库表包 { overflow-x: auto; border: 1px solid var(--bd); border-radius: 10px; }
+.库表 { border-collapse: collapse; width: 100%; font-size: 12px; }
+.库表 th {
+  text-align: left; padding: 7px 10px; color: var(--dim); font-weight: 500;
+  border-bottom: 1px solid var(--bd); white-space: nowrap; background: var(--card-hi);
+}
+.库表 td { padding: 7px 10px; border-bottom: 1px solid #1d1d1d; vertical-align: top; }
+.库表 tr:last-child td { border-bottom: 0; }
+.库表 .数 { font-family: var(--mono); color: var(--mut); white-space: nowrap; }
+.库表 .源 {
+  font-family: var(--mono); color: var(--mut); max-width: 190px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.库表 .类 { color: var(--dim); white-space: nowrap; }
+.库表 .文 { color: var(--fg); min-width: 280px; }
+.库表 .时 { font-family: var(--mono); color: var(--dim); white-space: nowrap; }
+.库页 { display: flex; gap: 14px; align-items: center; margin: 10px 0 20px; flex-wrap: wrap; }
+/* 页码按钮组整组靠左, 后面跟"第 N / M 页"那句 */
+.库页钮组 { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.库页钮 {
+  background: transparent; border: 1px solid var(--bd); border-radius: 7px;
+  color: var(--fg); font-family: var(--mono); font-size: 12px;
+  min-width: 30px; padding: 5px 7px; cursor: pointer; text-align: center;
+}
+.库页钮:hover:not(:disabled):not(.当) { border-color: var(--ok); color: var(--ok); }
+.库页钮.当 {
+  background: #0d2818; border-color: #166534; color: var(--ok);
+  font-weight: 600; cursor: default;
+}
+.库页钮:disabled { opacity: .3; cursor: default; }
+.库页省 { color: var(--dim); font-size: 12px; padding: 0 2px; }
+.库页讯 { font-family: var(--mono); font-size: 12px; color: var(--mut); }
+.库搜题 {
+  font-size: 13.5px; color: var(--ok); letter-spacing: .3px;
+  margin: 22px 0 8px; border-top: 1px solid var(--bd); padding-top: 18px;
+}
+.库果讯 { font-family: var(--mono); font-size: 12px; color: var(--mut); margin-bottom: 10px; }
+.库果讯.坏 { color: var(--warn); }
+.库果块 {
+  border: 1px solid var(--bd); border-radius: 10px; padding: 10px 12px;
+  margin-bottom: 8px; background: var(--card);
+}
+.库果头 { font-family: var(--mono); font-size: 11.5px; color: var(--ok); margin-bottom: 6px; }
+.库果文 { font-size: 12.5px; color: var(--mut); line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+@media (max-width: 620px) {
+  .库框, .库框.宽 { min-width: 0; flex: 1 1 100%; }
+  .库表 .文 { min-width: 180px; }
+}
+
+
+/* ───────────── 设置 · 日志 ───────────── */
+.日志列 { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.日志类 {
+  display: flex; flex-direction: column; gap: 2px; align-items: flex-start;
+  padding: 9px 13px; min-width: 138px;
+  background: var(--card-hi); border: 1px solid var(--bd-hi);
+  border-radius: 10px; color: inherit; font: inherit; cursor: pointer; text-align: left;
+}
+.日志类:hover { border-color: var(--ok); }
+.日志类.选 { border-color: var(--ok); background: #12211a; }
+.日志类.空 { opacity: .45; }
+.日志类 b { font-size: 13px; font-weight: 600; }
+.日志类 span { font-size: 11px; color: var(--mut); }
+.日志头 { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.日志题 { font-size: 12px; color: var(--mut); flex: 1; min-width: 200px; }
+.日志选 {
+  background: var(--card); border: 1px solid var(--bd-hi); border-radius: 8px;
+  color: inherit; font: inherit; font-size: 12px; padding: 5px 8px;
+}
+.日志自动 { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--mut); cursor: pointer; }
+.日志刷 { font-size: 12px; padding: 5px 14px; }
+.日志框 {
+  margin: 0; padding: 12px 14px; height: 380px; overflow: auto;
+  background: #0a0a0a; border: 1px solid var(--bd); border-radius: 10px;
+  font-size: 12px; line-height: 1.65; white-space: pre-wrap; word-break: break-all;
+  color: #c8c8c8;
+}
+
+/* ───────────── 设置 · 关闭 ───────────── */
+.关行 { display: flex; flex-direction: column; gap: 10px; max-width: 580px; }
+.关卡 {
+  display: grid; grid-template-columns: 1fr auto; gap: 3px 14px; align-items: center;
+  padding: 14px 16px; background: var(--card); border: 1px solid var(--bd); border-radius: var(--r);
+}
+.关卡 b { font-size: 13px; }
+.关卡 span { grid-column: 1; font-size: 12px; color: var(--mut); line-height: 1.55; }
+/* 关闭按钮默认就带暗红 —— 三张卡全是"点了就没了", 摆成普通灰按钮辨识度不够。
+   但别上鲜红: 站点是单强调色(绿), 红只当"这是破坏性操作"的提示用。 */
+.关钮 {
+  grid-column: 2; grid-row: 1 / 3;
+  padding: 8px 18px; border-radius: 8px; cursor: pointer;
+  background: var(--card-hi); border: 1px solid #3d2323; color: #e0a3a3;
+  font: inherit; font-size: 13px;
+}
+.关钮:hover { background: #241414; border-color: var(--warn); color: #fca5a5; }
+.关钮.待 { background: #2a1414; border-color: var(--warn); color: #fca5a5; }
+.关钮.险 {                                            /* 收工那个: 实底, 一眼看出比另外两个重 */
+  background: #3a1a1a; border-color: #8a4040; color: #f5b0b0;
+}
+.关钮.险:hover { background: #4a2020; border-color: var(--warn); }
+.关钮:disabled { opacity: .55; cursor: default; }
+
+/* 关闭节顶上那排"现在跑着什么": 亮绿点 = 在跑, 暗点 = 没在跑 */
+.关状 { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.关灯 {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-family: var(--mono); color: var(--dim);
+}
+.关灯 i { width: 8px; height: 8px; border-radius: 50%; background: #333; }
+.关灯.活 { color: var(--fg); }
+.关灯.活 i { background: var(--ok); box-shadow: 0 0 7px rgba(74, 222, 128, .55); }
+
+@media (max-width: 620px) {
+  .日志框 { height: 260px; }
+  .日志类 { min-width: 108px; }
+  .关卡 { grid-template-columns: 1fr; }
+  .关钮 { grid-column: 1; grid-row: auto; margin-top: 6px; }
+}
+
+/* ── 拖进来就填路径（2026-10-11 老板要的）────────────────────────── */
+/* 拖着的时候: 输入框整条亮成强调绿 + 中间浮一条提示 */
+/* (浮层必须 pointer-events:none, 否则它会把 drop 事件吃掉) */
+body.拖入中 #问表 {
+  border-color: var(--ok);
+  background: var(--card-hi);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, .12), 0 0 24px rgba(74, 222, 128, .10);
+}
+body.拖入中 #问框::placeholder { color: var(--ok); opacity: .9; }
+
+/* 松手填完闪一下 —— 这就是"颜色变化", 说明真填进去了 */
+@keyframes 填入闪 {
+  0%   { border-color: var(--ok); box-shadow: 0 0 0 4px rgba(74, 222, 128, .22); }
+  100% { border-color: var(--bd-hi); box-shadow: none; }
+}
+#问表.刚填入 { animation: 填入闪 .8s ease-out; }
+
+.拖提示 {
+  position: fixed; inset: 0; z-index: 60;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(12, 12, 12, .55);
+  pointer-events: none;                 /* ★ 别挡 drop */
+}
+body.拖入中 .拖提示 { display: flex; }
+.拖提示 .盒 {
+  border: 1px dashed var(--ok); border-radius: var(--r);
+  background: rgba(22, 22, 22, .96);
+  padding: 16px 26px; text-align: center;
+  color: var(--ok); font-size: 15px; font-family: var(--mono);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .55);
+}
+.拖提示 .盒 .小 { display: block; margin-top: 7px; color: var(--mut); font-size: 12px; }
+
+/* ── 导入: 对话框上的按钮 + 本机目录点选 + 按文件名搜（2026-10-11 老板追加要的）──
+   ★ 上一版这里的选择器写成了 #import钮, 而 HTML 里是 id="导入钮" —— 对不上, 按钮等于
+     一点样式都没有, 浏览器默认样式顶上来, 所以看着"不好看、位置也不对"(13:0x 那版)。
+     改样式一定连着元素 id 一起核, 别只看 DOM 里按钮在不在。 */
+#导入钮 {
+  flex: none; align-self: flex-end;
+  width: 36px; height: 36px; padding: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; color: var(--mut);
+  border: 1px solid var(--bd-hi); border-radius: 999px;
+  font-family: inherit; cursor: pointer;
+  transition: color .15s, border-color .15s, background .15s;
+}
+#导入钮:hover { color: var(--ok); border-color: var(--ok); background: rgba(74, 222, 128, .10); }
+#导入钮:active { background: rgba(74, 222, 128, .18); }
+
+.路径罩 {
+  position: fixed; inset: 0; z-index: 55;
+  background: rgba(10, 10, 10, .62);
+  display: flex; align-items: center; justify-content: center;
+}
+.路径罩[hidden] { display: none; }
+.路径框 {
+  width: min(680px, 92vw); max-height: 76vh;
+  display: flex; flex-direction: column;
+  background: var(--card); border: 1px solid var(--bd-hi); border-radius: var(--r);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+  font-family: var(--mono); overflow: hidden;
+}
+.路径头 {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px; border-bottom: 1px solid var(--bd); color: var(--fg); font-size: 13px;
+}
+.路径关 { background: transparent; border: 0; color: var(--dim); cursor: pointer; font-size: 14px; }
+.路径关:hover { color: var(--fg); }
+.路径条 {
+  padding: 8px 12px; border-bottom: 1px solid var(--bd);
+  color: var(--fg); font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* ★ 这一条显示的是"现在在哪"(状态), 不是能点的东西 —— 绿色在这个界面里留给能点的
+   (发送 / 选这层 / 选中的节), 所以路径用前景色, 前面挂个暗标签说明它是什么。 */
+.路径条::before { content: "位置 "; color: var(--mut); font-size: 11px; letter-spacing: .06em; }
+.路径单 {
+  flex: 1; min-height: 150px; overflow: auto; padding: 4px 0;
+  /* 默认那条亮白滚动条一进深色面板就出戏, 按主题收一下(WebKit 与 Firefox 各一份) */
+  scrollbar-width: thin; scrollbar-color: var(--bd-hi) transparent;
+}
+.路径单::-webkit-scrollbar { width: 10px; }
+.路径单::-webkit-scrollbar-track { background: transparent; }
+.路径单::-webkit-scrollbar-thumb {
+  background: var(--bd-hi); border-radius: 999px; border: 3px solid var(--card);
+}
+.路径单::-webkit-scrollbar-thumb:hover { background: #4a4a4a; }
+.路径行 {
+  display: flex; gap: 8px; align-items: baseline;
+  width: 100%; background: transparent; border: 0;
+  color: var(--fg); text-align: left; font: inherit; font-size: 13px;
+  padding: 6px 12px; cursor: pointer;
+}
+/* ★ 悬停与走位都在 #161616 的面板上, 而 --card-hi(#1c1c1c) 跟面板底只差 6 级 —— 挂上去等于
+   没挂(截图像素看不出来, computed style 却是"到位"的, 所以只读样式会骗人)。改用白/绿叠加,
+   差 20 级上下才看得见; 走位行另外用绿调(和「导入」按钮 hover 同一个值)跟悬停区分开。 */
+.路径行:hover { background: rgba(255, 255, 255, .07); }
+.路径行.亮 { background: rgba(74, 222, 128, .12); box-shadow: inset 2px 0 0 var(--ok); }
+.路径行.淡 { opacity: .5; }
+.路径号 { flex: none; width: 1em; color: var(--dim); }
+.路径行.是目录 .路径号 { color: var(--ok); }
+.路径名 { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.路径脚 {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 9px 12px; border-top: 1px solid var(--bd); font-size: 12.5px;
+}
+.路径灰 { color: var(--dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.路径钮们 { flex: none; display: flex; gap: 8px; }
+/* Tab 键走到的位置得看得见(不然键盘等于瞎摸) */
+#导入钮:focus-visible, #选这层:focus-visible, #路径消:focus-visible,
+.路径关:focus-visible, .路径行:focus-visible {
+  outline: 1px solid var(--ok); outline-offset: 2px;
+}
+#选这层, #路径消 {
+  background: transparent; color: var(--mut); border: 1px solid var(--bd-hi);
+  border-radius: 8px; padding: 5px 12px; font-size: 12px; font-family: inherit; cursor: pointer;
+}
+/* 主操作跟「发送」一个语言: 绿描边; 次操作(取消)保持安静 —— 否则两个灰按钮分不出主次 */
+#选这层 { color: var(--ok); border-color: var(--ok); }
+#选这层:hover { background: rgba(74, 222, 128, .10); }
+#路径消:hover { color: var(--fg); border-color: var(--bd-hi); }

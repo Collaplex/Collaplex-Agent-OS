@@ -1,0 +1,36 @@
+[project]
+name = "collaplex-agent"
+version = "0.1.0"
+description = "程序管记忆，模型管推理 —— 一个把上下文从模型手里拿回来的 Agent 运行时"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Collaplex Studio", email = "edgevoid@collaplex.me" }]
+keywords = ["agent", "llm", "rag", "context-management", "local-first", "llama-cpp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Chinese (Simplified)",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "openai>=3.24.0",
+    "python-dotenv>=1.2.4",
+    "numpy>=2.5.3",
+]
+
+[project.scripts]
+# 一个入口管住所有启动方式: collaplex-agent web / 自检 / 模型 / chat
+# ★ 这个项目不发包(pip install 不装它), 所以本机是靠 ~/.local/bin/collaplex-agent
+#   那个转发脚本在跑; 这行是给"哪天真要打包"留的正经入口声明。
+collaplex-agent = "cli:main"
+
+[project.urls]
+Homepage = "https://collaplex.me"
+
+# 说明: 这个文件只登记项目元数据与依赖, 不做打包。
+# 直接跑法见 README「快速开始」。类型检查用 pyrightconfig.json (与 Pylance 同源)。

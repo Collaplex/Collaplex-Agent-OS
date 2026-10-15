@@ -1,0 +1,58 @@
+<mxfile host="65bd71144e">
+    <diagram id="6BVqmEq_rsMGxQ-fhJau" name="第 1 页">
+        <mxGraphModel dx="678" dy="346" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-4" edge="1" parent="1" source="O1tBf96PPkAaxRU_HAsI-1" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="O1tBf96PPkAaxRU_HAsI-3">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="320" y="90"/>
+                            <mxPoint x="320" y="210"/>
+                            <mxPoint x="320" y="330"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-6" edge="1" parent="1" source="O1tBf96PPkAaxRU_HAsI-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="O1tBf96PPkAaxRU_HAsI-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="感受器" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-7" edge="1" parent="1" source="O1tBf96PPkAaxRU_HAsI-2" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="O1tBf96PPkAaxRU_HAsI-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="cnn集群网络" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-5" edge="1" parent="1" source="O1tBf96PPkAaxRU_HAsI-3" style="edgeStyle=none;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="O1tBf96PPkAaxRU_HAsI-1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="290" y="345"/>
+                            <mxPoint x="290" y="210"/>
+                            <mxPoint x="290" y="75"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="效应器" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="300" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="感受器多少神经元连cnn集群不知道，怎么连不知道全靠训练" vertex="1">
+                    <mxGeometry height="30" width="250" x="430" y="135" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-9" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="效应器多少神经元连cnn集群不知道，怎么连不知道全靠训练" vertex="1">
+                    <mxGeometry height="30" width="250" x="430" y="255" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-10" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="训练过程" vertex="1">
+                    <mxGeometry height="30" width="60" x="210" y="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-12" edge="1" parent="1" source="O1tBf96PPkAaxRU_HAsI-11" style="edgeStyle=none;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="O1tBf96PPkAaxRU_HAsI-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="O1tBf96PPkAaxRU_HAsI-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="激素调控" vertex="1">
+                    <mxGeometry height="60" width="120" x="520" y="180" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

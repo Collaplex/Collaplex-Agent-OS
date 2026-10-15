@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Collaplex Agent OS · 启动</title>
+<style>
+:root{
+  --bg:#0f0f0f; --card:#161616; --card-hi:#1c1c1c; --bd:#262626; --bd-hi:#343434;
+  --fg:#e8e8e8; --mut:#8a8a8a; --dim:#666; --ok:#4ade80; --坏:#f87171;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);min-height:100vh;
+  font:14px/1.6 "JetBrains Mono","Noto Sans CJK SC",ui-monospace,monospace;
+  display:flex;align-items:center;justify-content:center;padding:24px}
+.壳{width:min(780px,100%)}
+h1{font-size:19px;margin:0 0 6px;letter-spacing:.4px;font-weight:600}
+.g{display:flex;align-items:baseline;gap:10px;margin-bottom:26px}
+.副{color:var(--mut);font-size:12px}
+.版{color:var(--dim);font-size:11px;margin-left:auto}
+.钮组{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.大钮{flex:1 1 240px;padding:18px;background:var(--card);border:1px solid var(--bd-hi);
+  border-radius:12px;color:var(--fg);font:inherit;font-size:13px;cursor:pointer;
+  text-align:left;transition:background .15s,border-color .15s}
+.大钮:hover:not(:disabled){background:var(--card-hi);border-color:var(--ok)}
+.大钮:disabled{opacity:.4;cursor:default}
+.大钮 b{display:block;font-size:15px;margin-bottom:5px;font-weight:600}
+.大钮 span{color:var(--mut);font-size:12px;line-height:1.5}
+.灯组{display:flex;gap:20px;margin-bottom:16px;font-size:12px;flex-wrap:wrap}
+.灯{display:flex;align-items:center;gap:7px;color:var(--mut)}
+.点{width:8px;height:8px;border-radius:50%;background:#3a3a3a;flex:none}
+.点.通{background:var(--ok);box-shadow:0 0 7px var(--ok)}
+.点.忙{background:#eab308;animation:闪 1s infinite}
+@keyframes 闪{50%{opacity:.2}}
+.框{background:#0a0a0a;border:1px solid var(--bd);border-radius:12px;
+  padding:14px 16px;height:290px;overflow-y:auto;font-size:12px;line-height:1.75;
+  white-space:pre-wrap;word-break:break-all;color:#c4c4c4}
+.框 .好{color:var(--ok)} .框 .坏{color:var(--坏)} .框 .灰{color:var(--dim)}
+.进{margin-top:16px;display:none;align-items:center;gap:14px}
+.进.显{display:flex}
+.进钮{padding:10px 26px;background:var(--ok);color:#052e16;border-radius:8px;
+  text-decoration:none;font-weight:700;font-size:13px}
+.提{color:var(--mut);font-size:11px}
+</style>
+</head>
+<body>
+<div class="壳">
+  <div class="g">
+    <h1>Collaplex Agent OS</h1>
+    <div class="副">选一个启动方式 —— 程序管记忆, 模型管推理</div>
+    <div class="版">:8791</div>
+  </div>
+
+  <div class="钮组">
+    <button class="大钮" id="钮本地" type="button">
+      <b>以本地模型启动</b>
+      <span>拉起 PG + llama.cpp（主模型 + 向量）→ 检查单核对 → 自检 → 挂看门狗 → 放行</span>
+    </button>
+    <button class="大钮" id="钮普通" type="button">
+      <b>正常启动</b>
+      <span>起 PG + 检查单核对 + 自检；本地模型和看门狗都不动（自己起过模型时用）</span>
+    </button>
+  </div>
+
+  <div class="灯组">
+    <div class="灯"><i class="点" id="灯PG"></i>PostgreSQL</div>
+    <div class="灯"><i class="点" id="灯主模型"></i>主模型 :8790</div>
+    <div class="灯"><i class="点" id="灯向量"></i>向量 :8199</div>
+    <div class="灯"><i class="点" id="灯web"></i>web :8791</div>
+  </div>
+
+  <div class="框" id="日志">等你点一个启动方式。</div>
+
+  <div class="进" id="进">
+    <a class="进钮" href="/" onclick="sessionStorage.setItem('已过启动页','1')">进入 →</a>
+    <span class="提">启动完了。看门狗在后台盯着这四个服务, 谁挂拉谁。</span>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = (id) => document.getElementById(id);
+const 取 = (路, 选) => fetch(路, 选).then((r) => r.json());
+
+let 行数 = 0;          // 已经拿到第几行了（后端只回增量）
+let 计时 = null;       // 轮询定时器
+let 忙 = false;
+
+function 画灯(s) {
+  $("灯PG").className     = "点" + (s["PG"]     ? " 通" : "");
+  $("灯主模型").className = "点" + (s["主模型"] ? " 通" : (s["在跑"] ? " 忙" : ""));
+  $("灯向量").className   = "点" + (s["向量"]   ? " 通" : (s["在跑"] ? " 忙" : ""));
+  $("灯web").className    = "点" + (s["web"]    ? " 通" : "");
+}
+
+function 上色(行) {
+  if (/✓|全过|完成|好了/.test(行)) return '<span class="好">' + 转义(行) + "</span>";
+  if (/✗|失败|不通|没起来/.test(行)) return '<span class="坏">' + 转义(行) + "</span>";
+  if (/^\[/.test(行)) return '<span class="灰">' + 转义(行) + "</span>";
+  return 转义(行);
+}
+const 转义 = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+async function 拉() {
+  try {
+    const d = await 取("/api/启动/日志?起=" + 行数);
+    const 框 = $("日志");
+    if (d.进度 && d.进度.length) {
+      if (行数 === 0) 框.innerHTML = "";
+      框.innerHTML += d.进度.map(上色).join("<br>") + "<br>";
+      行数 += d.进度.length;
+      框.scrollTop = 框.scrollHeight;
+    }
+    await 刷状态();
+    if (!d.在跑) 收尾(d.结果);
+  } catch (e) {
+    $("日志").innerHTML += '<span class="坏">（拉日志出错: ' + 转义(String(e)) + "）</span><br>";
+  }
+}
+
+async function 刷状态() {
+  const s = await 取("/api/启动/状态");
+  画灯(s);
+  本地模型可用开关(s);
+  return s;
+}
+
+// ★ 这台机器没有本地模型栈（vendor/llama.cpp 不在，比如 Windows 包）→ 把「以本地模型启动」
+//   灰掉，只留「正常启动」。没装主模型就别让那个按钮亮着骗人（老板 2026-10-12）。
+let 有本地模型 = true;
+function 本地模型可用开关(s) {
+  const 钮 = $("钮本地");
+  if (!钮) return;
+  有本地模型 = s.本地模型 !== false;
+  钮.disabled = !有本地模型;
+  if (!有本地模型) {
+    const b = 钮.querySelector("b"); if (b) b.textContent = "以本地模型启动（不可用）";
+    const sp = 钮.querySelector("span");
+    if (sp) sp.textContent = "这台机器没有本地模型栈（vendor/llama.cpp 不存在）。安装 llama.cpp 与模型文件后可用；只走云端 API 或暂不运行模型时，用「正常启动」。";
+  }
+}
+
+function 收尾(结果) {
+  if (计时) { clearInterval(计时); 计时 = null; }
+  if (忙) {
+    忙 = false;
+    $("钮本地").disabled = !有本地模型;   // 没本地模型栈就别又点亮它
+    $("钮普通").disabled = false;
+  }
+  if (结果 === "好") $("进").classList.add("显");
+}
+
+async function 跑(本地) {
+  if (忙) return;
+  忙 = true;
+  行数 = 0;
+  $("进").classList.remove("显");
+  $("日志").innerHTML = "";
+  $("钮本地").disabled = true;
+  $("钮普通").disabled = true;
+  try {
+    await 取("/api/启动/跑", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 本地: 本地 }),
+    });
+  } catch (e) {
+    $("日志").innerHTML = '<span class="坏">启动失败: ' + 转义(String(e)) + "</span><br>";
+    收尾("");
+    return;
+  }
+  计时 = setInterval(拉, 900);
+  拉();
+}
+
+$("钮本地").addEventListener("click", () => 跑(true));
+$("钮普通").addEventListener("click", () => 跑(false));
+
+// 进来先看眼下四个服务什么状况（上一次起过的可能还在跑）
+刷状态().then((s) => {
+  if (s["主模型"] && s["向量"]) $("日志").innerHTML += "\n（本地模型已在运行 —— 直接使用「正常启动」即可）";
+});
+</script>
+</body>
+</html>

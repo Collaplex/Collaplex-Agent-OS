@@ -1,0 +1,46 @@
+{
+  "name": "skill_search",
+  "version": "1.0.0",
+  "description": "skill 检索：给一句话，找出该用哪个 skill，返回它的描述和相对目录。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "commands": [
+    {
+      "name": "index",
+      "file": "scripts/index_skills.py",
+      "usage": "index [--json]",
+      "note": "扫 skill 目录，把各 SKILL.md 的 frontmatter 建成索引"
+    },
+    {
+      "name": "find",
+      "file": "scripts/find_skill.py",
+      "usage": "find \"<一句话>\" [-n 3] [--json]",
+      "note": "检索，返回命中的 skill 描述和相对目录"
+    }
+  ],
+  "needs": {
+    "env": ["EMBEDDING_BASE_URL", "EMBEDDING_MODEL"],
+    "config": "resources/skill_index.json",
+    "service": {
+      "script": "scripts/embed_server.sh",
+      "port_from": "EMBEDDING_BASE_URL",
+      "model": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+      "note": "跟 rag 共用同一个向量服务，起一次就够"
+    }
+  },
+  "corpus": {
+    "kind": "skill-frontmatter",
+    "root": "skill/",
+    "pattern": "<skill>/SKILL.md 开头 --- 与 --- 之间的 YAML",
+    "unit": "一个 skill 一条，不切片"
+  },
+  "index": "scripts/skill-index.json",
+  "index_schema": {
+    "fields": ["index", "vector", "text", "hash", "source"],
+    "note": "text = frontmatter 原文；source = skill 的相对目录（就是返回的那个目录）"
+  },
+  "io": {
+    "find": "只读",
+    "index": "每次全量重建 scripts/skill-index.json"
+  }
+}

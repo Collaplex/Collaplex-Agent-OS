@@ -1,0 +1,9 @@
+# 本地/运行期，不进仓库
+__pycache__/
+*.pyc
+.venv/
+state/
+corpus/
+*.env
+.env*
+*.log

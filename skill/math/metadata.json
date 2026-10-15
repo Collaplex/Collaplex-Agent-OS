@@ -1,0 +1,79 @@
+{
+  "name": "math",
+  "version": "1.0.0",
+  "description": "算数：表达式/方程/矩阵/多项式/微积分/统计/概率/换算/出图/日期。全部交给 Python 真算(有理数精确 + Decimal 高精度)，★模型不许心算。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "actions": {
+    "calc": "算表达式(精确分数 / 高精度小数)",
+    "num": "分解/质数/阶乘/组合排列/斐波那契/进制/位运算",
+    "solve": "一元方程数值求根 / 线性方程组精确解",
+    "linalg": "行列式/逆/转置/乘/秩/解/特征值",
+    "poly": "多项式 求值/根/加减乘除/导数/积分",
+    "calculus": "导数/二阶导/定积分/极限/求和/连乘",
+    "stats": "描述统计/相关/回归",
+    "prob": "二项/正态/泊松/几何",
+    "money": "占比/折扣/涨跌/单利/复利/月供",
+    "units": "单位与温度换算",
+    "plot": "函数图/折线/散点/柱状 → SVG",
+    "date": "日期差/加减/周几/第几周"
+  },
+  "commands": [
+    {
+      "name": "find",
+      "file": "scripts/retrieve.py",
+      "usage": "find \"<一句话>\" [-n 3] [--mode vector|rrf|weight] [--index <索引路径>]",
+      "note": "查命令库：给一句话，返回「出处 + 分 + 条目全文（用途/用法/选项/示例/备注）」"
+    },
+    {
+      "name": "index",
+      "file": "scripts/retrieve.py",
+      "usage": "index",
+      "note": "建/更新命令库索引（按 hash 复用向量，只重算改过的条目）"
+    }
+  ],
+  "briefing": {
+    "command": "find",
+    "query_from": "用户原话",
+    "top_k": 3,
+    "note": "★ 程序在递交 exec **之前**先跑这条，把条目全文贴进任务里 —— 该查什么由声明决定，不靠模型自发去查。模型只保留「条目不对路时自己再查一次」的自愈口子"
+  },
+  "needs": {
+    "env": ["EMBEDDING_BASE_URL", "EMBEDDING_MODEL"],
+    "config": "../rag/resources/embed.json（借 rag 的切片/嵌入参数）",
+    "service": {
+      "script": "../rag/scripts/embed_server.sh",
+      "port_from": "EMBEDDING_BASE_URL",
+      "note": "跟 rag / skill_search / linux / file 共用同一个向量服务"
+    }
+  },
+  "corpus": {
+    "kind": "command-docs",
+    "root": "commands/",
+    "pattern": "一个动作一个 md：`## 动作名 · 中文用途` → 用途 / 用法 / 选项 / 示例 / 备注(每条 ≤800 字符)",
+    "unit": "一片一条（一条命令正好 1 片）"
+  },
+  "index": "commands-index.json",
+  "index_schema": {
+    "fields": ["index", "vector", "text", "hash", "source"],
+    "note": "source = commands/<动作>.md；检索件是 scripts/retrieve.py（倒排缓存在 cache/，不进 git）"
+  },
+  "runtime_files": {
+    "main.py": "入口：动作名 → 实现件（compute / convert / retrieve）",
+    "scripts/engine.py": "引擎：值类型(Fraction/Decimal) + ast 白名单表达式求值 + 数值算法 + 格式化",
+    "scripts/cli.py": "公共件：参数取法 / 数据解析 / 统一输出格式 / 脚本入口",
+    "scripts/compute.py": "calc num solve linalg poly calculus stats prob",
+    "scripts/convert.py": "money units plot date",
+    "scripts/retrieve.py": "命令库检索件（find / index）"
+  },
+  "rules": {
+    "不许硬算": "任何数字运算结果都必须来自本 skill 的命令输出；模型自己推的/估的/凭记忆报的数一律不算数",
+    "照抄": "汇报时照抄命令输出（含 精确/近似 标记与位数），不许四舍五入或改写",
+    "算不了就照实说": "命令退出码 1 时如实回报原因，不许改口自己算一个补上"
+  },
+  "io": {
+    "find": "只读",
+    "index": "按 hash 复用向量，只重算新增/改过的条目",
+    "plot": "落 SVG 到 skill/math/logs/（可用 -o 指定别处）"
+  }
+}

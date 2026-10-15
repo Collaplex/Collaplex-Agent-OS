@@ -1,0 +1,137 @@
+{
+  "default_skill": "skill/seek/SKILL.md",
+  "evidence": {
+    "enabled": true,
+    "max_chars": 2000,
+    "_说明": "检索不出 skill 时，把『想要什么』变成一条真命令跑掉、输出贴给主 agent（治『该动没动就直接编』）。enabled=false 即回滚原行为"
+  },
+  "exec": {
+    "timeout_seconds": 180,
+    "max_tokens": 3000,
+    "max_rounds": 4,
+    "max_nudges": 2,
+    "_说明_手提示": "exec 的手提示 = config/sub_agent.json 的 prompts.exec 指向的文件。'标记'版（要求 <调用>命令</调用>，旧写法）另存为 config/skills/exec-标记.md —— 切回旧行为只改 prompts.exec 这一个键。★ prompts 是文件映射表，不许往里面塞说明键（自检会逐键当文件查）。",
+    "命令提取": {
+      "读回件": "命令读回",
+      "读回模型": "本地",
+      "读回上限": 200,
+      "_说明": "本趟待执行命令的提取。来源三条，按序尝试：①调用标记（旧写法 <调用>…</调用>，兼容旧手提示）②尾巴规则层（仅取执行意图明确的写法；复述、建议、设想不计）③专用读回件（纯翻译，不做判定 —— 判定归上游尾巴句）。三条均在本地完成，无云端开销。"
+    },
+    "资料预取": {
+      "enabled": true,
+      "规程词": [
+        "怎么跑",
+        "怎么用",
+        "怎么建",
+        "怎么维护",
+        "怎么调",
+        "在哪",
+        "是什么",
+        "改哪几处",
+        "分几层",
+        "以前怎么定",
+        "为什么",
+        "有什么区别",
+        "怎么写"
+      ],
+      "手册命令": "./.venv/bin/python skill/ops/main.py find \"{问题}\" -n 3",
+      "记忆命令": "./.venv/bin/python skill/rag/main.py recall \"{问题}\" -n 5",
+      "手册上限": 3000,
+      "记忆上限": 2000,
+      "超时秒": 60,
+      "_说明": "exec 前置资料预取：先取手册（skill/ops）与记忆库（skill/rag）命中条目，格式化为【资料】块注入上下文。★ 判据：仅'规程 / 道理类'问题（命中 规程词）注入；实况类问题（余量、端口占用、任务清单）不注入 —— 记忆库内容为既往执行输出，注入实况类等同于以历史结论冒充当前状态。enabled=false 即回滚（退化为模型自行取值）。"
+    },
+    "preamble_max_chars": 120,
+    "preamble_markers": [
+      "我来",
+      "我先",
+      "让我",
+      "接下来",
+      "正在",
+      "稍等",
+      "先去",
+      "再看看",
+      "我去",
+      "这就"
+    ],
+    "blocked_fragments": [
+      "rm -rf /",
+      "rm -rf /*",
+      "rm -rf ~",
+      "rm -rf $home",
+      "rm -rf *",
+      "rm -rf ..",
+      "mkfs",
+      "wipefs",
+      "mkswap",
+      "dd if=",
+      "fdisk",
+      "parted",
+      "shutdown",
+      "reboot",
+      "poweroff",
+      "halt",
+      "> /dev/sd",
+      "> /dev/nvme",
+      "chmod -r 777",
+      ":(){",
+      "crontab -r",
+      "userdel",
+      "visudo"
+    ],
+    "sudo_pattern": "(^|[\\s;&|])sudo([\\s;&|]|$)",
+    "wide_remove_targets": [
+      "/",
+      "*",
+      ".",
+      "..",
+      "~",
+      "$home",
+      "/tmp",
+      "/var/tmp",
+      "/etc",
+      "/usr",
+      "/boot",
+      "/opt",
+      "/srv",
+      "/root",
+      "/var",
+      "/home",
+      "/lib",
+      "/bin",
+      "/sbin"
+    ]
+  },
+  "ui": {
+    "reasoning_label": "思考过程",
+    "answer_label": "回答",
+    "prompt": ">",
+    "init_label": "正在初始化…",
+    "exec_label": "正在执行…",
+    "exec_tag": "exec agent",
+    "subagent_tag": "子 agent",
+    "error_label": "本轮未完成",
+    "error_hint": "（不影响下一轮，可继续提问）",
+    "exit_command": "/exit",
+    "exit_word": "已退出",
+    "banner_char": "=",
+    "divider_char": "-"
+  },
+  "misc": {
+    "degrade_chars": 400,
+    "probe_timeout_seconds": 3.0,
+    "window_timeout_seconds": 5.0
+  },
+  "refine": {
+    "idle_seconds": 1200,
+    "watch_interval": 60,
+    "max_tokens": 1536,
+    "knowledge_limit": 8,
+    "prompts": {
+      "summary": "refine-summary",
+      "knowledge": "refine-knowledge",
+      "alias": "refine-alias"
+    },
+    "hard_idle_seconds": 7200
+  }
+}

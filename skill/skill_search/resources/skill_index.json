@@ -1,0 +1,11 @@
+{
+  "skill_root": "",
+  "index": "scripts/skill-index.json",
+  "exclude_dirs": ["_deprecated"],
+  "batch_size": 16,
+  "timeout": 300,
+  "retry": 3,
+  "vector_digits": 6,
+  "top_k": 3,
+  "hit_threshold": null
+}

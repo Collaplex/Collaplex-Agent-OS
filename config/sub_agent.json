@@ -1,0 +1,71 @@
+{
+  "main_skill": "skill/seek/SKILL.md",
+  "rag": {
+    "entry": "skill/rag/main.py",
+    "top_k": 3,
+    "tier": 2
+  },
+  "skill_search": {
+    "entry": "skill/skill_search/main.py",
+    "top_k": 5
+  },
+  "skills": {
+    "file": true,
+    "kali": true,
+    "linux": true,
+    "math": true,
+    "mtp": true,
+    "ops": true,
+    "orchestra": true,
+    "outsource": true,
+    "rag": true,
+    "search": true,
+    "seek": true,
+    "skill_search": true,
+    "timer": true,
+    "vision": true
+  },
+  "budget": {
+    "fallback_context_window": 80000,
+    "skill_ratio": 0.4,
+    "output_reserve": 4000,
+    "readonly_reserve": 8000
+  },
+  "analyze": {
+    "max_queries": 3
+  },
+  "limits": {
+    "analyze_max_tokens": 1200,
+    "judge_max_tokens": 1200
+  },
+  "history_context": {
+    "_说明": "喂给子 agent 分析/判断两步的'上文'块——不加, '那两个也处理了'这种追问在它眼里没头没尾(容易断档)。主 agent 与 exec 另有 recent_turn_hits 注入, 各管一段。",
+    "enabled": true,
+    "turns": 1,
+    "answer_chars": 400
+  },
+  "prompts": {
+    "analyze": "config/skills/plan.md",
+    "judge": "config/skills/judge.md",
+    "pick": "config/skills/pick.md",
+    "exec": "config/skills/exec.md",
+    "nudge": "config/skills/nudge.md",
+    "wrapup": "config/skills/wrapup.md",
+    "readback": "config/skills/readback.md",
+    "judge_freeform": "config/skills/judge-freeform.md",
+    "命令读回": "config/skills/命令读回.md"
+  },
+  "skill_retrieval": {
+    "enabled": true,
+    "max_retry": 1,
+    "_说明_judge_输出": "judge 那一步的出口形态。json = 要求模型直接吐 {\"need\",\"wanted\"}(现状, 实测 100%); 读回 = 让模型把判断说出来, 再由读回件 config/skills/readback.md 读成结构(实测 96%, 上游不必背格式)。★ 切换只改这一个键, 两个模式都留着。",
+    "judge_输出": "json",
+    "读回上限": 200,
+    "_说明_不可交办": "不许派给执行体的 skill —— 元技能(挑 skill 这一步自己)与花钱/交叉验证的件都不是\"能真干活\"的: 派给它只能再挑一遍(交回理由书, 活一件没干)或者白花云端钱。挑选与回落都按这张表剔, 剔完一个不剩才回落自己答(说人话, 不许编)。",
+    "不可交办": [
+      "skill_search",
+      "outsource",
+      "mtp"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+#!/bin/sh
+# Collaplex Agent OS 的入口 —— 认 venv, 认不到就退系统 python3
+# (源码树里跑时项目自带 .venv, 装到系统上时 postinst 建的那份; 两处同名同路径)
+set -u
+ROOT=/usr/share/collaplex-agent-os
+PY="$ROOT/.venv/bin/python"
+[ -x "$PY" ] || PY=/usr/bin/python3
+
+# 解压即用包的习惯写法也认: --自检 / --selfcheck → 自检
+if [ "${1:-}" = "--自检" ] || [ "${1:-}" = "--selfcheck" ]; then
+    shift
+    set -- 自检 "$@"
+fi
+
+export PYTHONUTF8=1
+# ★ 字节码写到 /var/lib, 别写源码树: 系统安装的树是 root 只读的, 而自检里
+#   py_compile.compile(cfile=None) 会往 <源码目录>/__pycache__ 写 → PermissionError。
+#   PYTHONPYCACHEPREFIX 连 py_compile 都认(它内部走 sys.pycache_prefix), 不用改代码。
+export PYTHONPYCACHEPREFIX=/var/lib/collaplex-agent-os/pycache
+# ★ 交付形态两样都认: 源码包有 cli.py; 字节码包只有 cli.pyc（.py 全收起来了）。
+ENTRY="$ROOT/cli.py"
+[ -f "$ENTRY" ] || ENTRY="$ROOT/cli.pyc"
+exec "$PY" "$ENTRY" "$@"

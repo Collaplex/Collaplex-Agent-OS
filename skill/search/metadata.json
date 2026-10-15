@@ -1,0 +1,153 @@
+{
+  "name": "search",
+  "version": "0.3.0",
+  "description": "联网搜索: 去 bing 与百度拿结果(跨站去重)、用真浏览器取页(防爬虫识别)、HTML 去壳留肉成正文、结果落热库可回查。只回原文片段与链接, 不做总结推理。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "stage": "第三刀: 按设计图补齐体积闸(单页 5MB / 单次 20MB / 落盘 2GB LRU) + 两表补 status 列 + 独立「截图」命令。见 diagrams/联网搜索skill-架构.md §9/§10/§12",
+  "actions": {
+    "搜": "去 bing+百度 拿结果(跨站去重, 自动落热库, 算一次数)",
+    "取": "真浏览器取一页(html + 截图 + 状态码 + 错误分类)",
+    "截图": "真浏览器渲染后只截一张整页图(不解析正文)",
+    "正文": "HTML 去壳留肉 -> 标题 + 正文段落(--save --url 可切片落库)",
+    "浏览器": "管常驻浏览器(start / stop / status)",
+    "热库": "只在热库里回查(只搜热的)",
+    "语料": "看两表: 行数/大小/来源分布/落盘缓存/本轮还剩几次",
+    "过期": "把过期的热行沉到冷库",
+    "清理": "冷库过期/超量的删掉 + 落盘缓存封顶, 截图跟着一起清"
+  },
+  "commands": [
+    {
+      "name": "搜",
+      "file": "scripts/serp.py",
+      "usage": "搜 \"<查询词>\" [--pages N] [--site both|bing|baidu] [--engine auto|browser|http] [--no-fallback] [--no-save] [--no-gate] [--json]",
+      "note": "默认两站一起打(bing 真浏览器 + 百度直抓)再跨站去重; 单站不对题会自动退回核心词重查。搜到的落热库, 并扣一次数(单轮上限 100)。单次取的字节到 20MB 就停(体积闸)"
+    },
+    {
+      "name": "取",
+      "file": "scripts/browser.py",
+      "usage": "取 <url> [--shot 路径] [--seconds N]",
+      "note": "真浏览器取页, 回 JSON(状态码 / 标题 / 正文长度 / html 落盘路径 / 截图路径 / 错误分类); html 超 5MB 会截断"
+    },
+    {
+      "name": "截图",
+      "file": "scripts/browser.py",
+      "usage": "截图 <url> [--shot 路径]",
+      "note": "同一条渲染路, 只回截图路径不回正文; 截到图就算成(空页面也算成)"
+    },
+    {
+      "name": "正文",
+      "file": "scripts/article.py",
+      "usage": "正文 <html文件|-> [--min N] [--max N] [--save --url <地址> [--query <词>] [--status N]] [--json]",
+      "note": "段够长就留, 原文一个字不改写; --save 时按 rag 的算法切片(每块 800 字)落热库, 截图一起记上(TTL 一起清); --status 不填就翻同名 .meta.json"
+    },
+    {
+      "name": "浏览器",
+      "file": "scripts/browser.py",
+      "usage": "浏览器 start|stop|status",
+      "note": "常驻 + 闲置看门狗(idle_seconds 到点自杀, 下次用时自动拉起)"
+    },
+    {
+      "name": "热库",
+      "file": "scripts/corpus.py",
+      "usage": "热库 \"<想找的话>\" [-n N] [--kind serp|page] [--json]",
+      "note": "只查热库(24h 窗口内), 向量检索; 命中行会记一次使用次数"
+    },
+    {
+      "name": "语料",
+      "file": "scripts/corpus.py",
+      "usage": "语料 [--json]",
+      "note": "两表行数/大小/来源分布(谁搜来的)/热窗口内多少/落盘缓存多大/本轮闸还剩几次"
+    },
+    {
+      "name": "过期",
+      "file": "scripts/corpus.py",
+      "usage": "过期",
+      "note": "过期热行沉到冷库(平时落库时顺手做, 这条是手动版)"
+    },
+    {
+      "name": "清理",
+      "file": "scripts/corpus.py",
+      "usage": "清理 [--dry]",
+      "note": "冷库到点(默认 90 天)/超量(默认 2GB)的删掉 + 落盘缓存封顶(默认 2GB, LRU 从最老的删), 截图跟着一起清; --dry 只数不删"
+    },
+    {
+      "name": "解析",
+      "file": "scripts/serp.py",
+      "usage": "解析 <HTML文件> [--site auto|bing|baidu] [--query <词>] [--json]",
+      "note": "拿存下来的结果页 HTML 离线解析(不出网/不扣数): 查是「被挡/改版」还是「真没有」, 或换个词重排"
+    },
+    {
+      "name": "find",
+      "file": "scripts/retrieve.py",
+      "usage": "find \"<一句话>\" [-n 3] [--mode vector|rrf|weight] [--index <索引路径>] [-t]",
+      "note": "查命令库: 给一句话, 返回「出处 + 分 + 条目全文(用途/用法/选项/示例/备注)」; -t 只出排名表"
+    },
+    {
+      "name": "index",
+      "file": "scripts/retrieve.py",
+      "usage": "index",
+      "note": "建/更新命令库索引(按 hash 复用向量, 只重算改过的条目)"
+    }
+  ],
+  "briefing": {
+    "command": "find",
+    "query_from": "用户原话",
+    "top_k": 3,
+    "note": "★ 程序在递交 exec **之前**先跑这条，把条目全文贴进任务里 —— 检索是确定性的（该查什么由声明决定），不靠模型自发去查。模型只保留「条目不对路时自己再查一次」的自愈口子"
+  },
+  "needs": {
+    "env": [
+      "RAG_PG_DSN",
+      "EMBEDDING_BASE_URL",
+      "EMBEDDING_MODEL"
+    ],
+    "env_note": "RAG_PG_DSN=PG 连接串(与 rag 同一个库) / EMBEDDING_BASE_URL 与 EMBEDDING_MODEL=向量接口(与 rag 共用); 都在项目根 .env",
+    "config": "resources/browser.json(浏览器: 端口 / 闲置秒数 / 单页上限 max_html_bytes) / resources/store.json(落库: 表名 / 维度 1024 / 热窗口 24h / 冷库 90天·2GB / 体积闸 page_max_mb 5 · single_max_mb 20 · disk_max_mb 2048 / 单轮 100 次)",
+    "bin": {
+      "chrome": "/usr/bin/google-chrome",
+      "note": "CDP 驱动系统 Chrome, 不装 playwright —— 项目 venv 里已有 websocket-client 1.9.2"
+    }
+  },
+  "runtime_files": {
+    "main.py": "入口: 动作名 -> 实现件",
+    "scripts/browser.py": "真浏览器(CDP): start/stop/status/fetch/shot/watch + 错误分类 + 落盘",
+    "scripts/serp.py": "bing/百度 结果页 -> 结构化结果 + 跨站去重 + IDF 重排 + 相关性自检/退回核心词 + 单次 20MB 闸 + 落库/次数闸",
+    "scripts/article.py": "HTML -> 标题 + 正文段落(去壳留肉) + 可切片落库",
+    "scripts/corpus.py": "落库与回查: 热库/冷库 / 去重 / TTL(下沉+清理+截图同清) / 落盘 2GB LRU(trim_cache) / 单轮 100 次闸",
+    "scripts/fetch.py": "HTTP 直抓(快, 会被挡) —— 百度走这条, 也是 bing 的兜底; 单页 5MB 上限",
+    "scripts/retrieve.py": "命令库检索(动作 index / find) —— 内核靠它找命令",
+    "commands-index.json": "命令库索引(由 retrieve.py index 生成)"
+  },
+  "state": {
+    "cache/pages/": "落盘 html(浏览器与直抓共用, 2GB LRU 封顶)",
+    "cache/shots/": "整页截图(库里有 shot 记录, 与 TTL 一起清, 见架构 §2; 也在 2GB LRU 内)",
+    "cache/browser/": "chrome.pid / watch.pid / last_use; profile 在 stop 时清掉",
+    "cache/budget.json": "单轮次数闸的状态(轮次 / 已用 / 最后动作时间)",
+    "logs/": "browser.log / watchdog.out / chrome.out"
+  },
+  "db": {
+    "search_hot": "热库: 只搜这里; 过了热窗口(24h)沉冷。列: url/norm(去重键)/title/snippet/site(来源)/query/kind(serp|page)/text/hash/embedding(1024)/shot/status(取页状态码)/hits/created_at/used_at; 唯一键 (norm, hash)",
+    "search_corpus": "冷库: 沉下来的原件(90 天 / 2GB 封顶), 不参与检索, 只做复用; 同样有 status 列",
+    "去重": "规范化地址(去 utm 等跟踪参数) + 正文指纹 唯一; 再搜到同一条只刷新 used_at 与次数",
+    "status": "取页拿到的 HTTP 码: serp 行按结果页的码(默认 200), 正文行按 取 的输出, 0 = 没拿到"
+  },
+  "rules": {
+    "只回原文": "结果与正文都是原文片段 + 链接: 不复述、不改写、不做总结推理",
+    "别猜": "取不到就把具体报错带回(404 / 站点不存在 / 响应超时 / HTTPS 错误 / 被挡成验证页), 不编内容",
+    "空页面": "正文太少(默认 <200 字)只回截图, 不硬塞空正文",
+    "百度会挡": "百度连打几次会换成安全验证页 —— 这时要明说\"被挡了\", 不能混成\"没搜到\"",
+    "体积闸": "单页 5MB / 单次(一条命令) 20MB / 落盘 2GB LRU —— 防一次搜出格把内存与磁盘打爆",
+    "自家事找 rag": "项目内的代码/配置/语料去 rag, 这里只管外面的事"
+  },
+  "io": {
+    "搜": "出网 + 写热库 + 扣一次数",
+    "取": "出网(真浏览器) + 落盘 html/截图",
+    "截图": "出网(真浏览器) + 落盘截图",
+    "正文": "只读; --save 时写热库",
+    "热库": "只读(命中会记使用次数)",
+    "语料": "只读",
+    "过期": "热库 -> 冷库",
+    "清理": "删冷库行 + 删截图文件 + 落盘缓存 LRU 封顶"
+  }
+}

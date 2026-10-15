@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Collaplex Agent OS
+Comment=程序管记忆, 模型管推理的 Agent 运行时
+Comment[zh_CN]=程序管记忆, 模型管推理的 Agent 运行时
+Exec=collaplex-agent-os web
+Icon=collaplex-agent-os
+Terminal=false
+Categories=Development;
+Keywords=agent;llm;collaplex;rag;
+StartupNotify=true

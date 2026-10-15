@@ -1,0 +1,25 @@
+Source: collaplex-agent-os
+Section: utils
+Priority: optional
+Maintainer: Collaplex Studio <edgevoid@collaplex.me>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Rules-Requires-Root: no
+Homepage: https://collaplex.me
+
+Package: collaplex-agent-os
+Architecture: all
+Depends: ${misc:Depends}, python3 (>= 3.14), python3-venv, python3-pip, ca-certificates
+Description: Collaplex Agent OS —— 程序管记忆, 模型管推理的 Agent 运行时
+ 把上下文从模型手里拿回来的 agent: 程序管记忆(两层记忆库 + 检索),
+ 模型管推理(本地 llama.cpp 或任意 OpenAI 兼容服务)。
+ .
+ 一个入口管住所有启动方式: collaplex-agent web / 自检 / 模型 start|stop|status / chat。
+ .
+ 装完不启动任何服务、不写用户配置 —— 要跑自己跑那条命令(老板口径)。
+ 凭据与模型服务不在包里: 照 /usr/share/collaplex-agent-os/.env.example
+ 填 /etc/collaplex-agent-os/env(模式 600)。
+ .
+ 交付形态两种: 源码包(带 .py) 与 字节码包(只有 .pyc, 由 打包/打deb.sh --字节码 打)。
+ 字节码跟着 CPython 小版本走, 所以依赖写的是 python3 (>= 3.14) ——
+ 源码形态本来 3.11 起就能跑, 这里为两种形态共用一份控制文件, 统一按 3.14 要求。

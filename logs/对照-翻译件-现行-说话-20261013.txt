@@ -1,0 +1,83 @@
+====================================================================================================
+翻译件探针 · 叙事版输出 → 结构化结论（三级还原）    2026-10-13 21:41:12
+====================================================================================================
+原始臂: judge-现行-说话.md（83 行）· 翻译件 16 行
+题量: 28 题 × 2 模型 = 56 发；每发走 ① 抠 JSON ② 关键词 ③ 模型翻译
+
+题                         期望    模型      ① 抠JSON   ② 关键词     ③ 模型     最终    原文长度
+----------------------------------------------------------------------------------------------------
+磁盘还剩多少空间                  True  mimo    None      None      True     ✅     92
+磁盘还剩多少空间                  True  本地8B    None      None      True     ✅     41
+谁占着 8789 端口               True  mimo    None      None      True     ✅     98
+谁占着 8789 端口               True  本地8B    None      None      True     ✅     138
+现在跑着哪些进程                  True  mimo    None      None      True     ✅     299
+现在跑着哪些进程                  True  本地8B    None      None      True     ✅     114
+我的定时任务都有啥                 True  mimo    None      None      True     ✅     201
+我的定时任务都有啥                 True  本地8B    None      None      True     ✅     217
+根分区快满了吗                   True  mimo    None      None      True     ✅     65
+根分区快满了吗                   True  本地8B    None      None      True     ✅     115
+U 盘挂上了没有                  True  mimo    None      None      True     ✅     106
+U 盘挂上了没有                  True  本地8B    None      None      True     ✅     59
+日志里最近报了啥错                 True  mimo    None      None      None     ❌     291
+日志里最近报了啥错                 True  本地8B    None      None      True     ✅     110
+这套系统的清洗怎么跑                True  mimo    None      None      None     ❌     106
+这套系统的清洗怎么跑                True  本地8B    None      None      True     ✅     132
+这套系统的日志在哪                 True  mimo    None      None      True     ✅     181
+这套系统的日志在哪                 True  本地8B    None      None      True     ✅     86
+加一个新 skill 要改哪几处          True  mimo    None      None      True     ✅     225
+加一个新 skill 要改哪几处          True  本地8B    None      None      True     ✅     289
+磁盘满了会有什么后果                False mimo    None      None      False    ✅     89
+磁盘满了会有什么后果                False 本地8B    None      None      False    ✅     106
+linux 的 inode 是什么意思       False mimo    None      None      False    ✅     599
+linux 的 inode 是什么意思       False 本地8B    None      True      True     ❌     89
+清洗是什么                     False mimo    None      None      False    ✅     110
+清洗是什么                     False 本地8B    None      True      True     ❌     152
+systemd 怎么建个服务            False mimo    None      True      True     ❌     222
+systemd 怎么建个服务            False 本地8B    None      None      False    ✅     177
+帮我把这句话翻成英文                False mimo    None      None      False    ✅     266
+帮我把这句话翻成英文                False 本地8B    None      None      True     ❌     971
+你好，介绍一下你自己                False mimo    None      None      False    ✅     361
+你好，介绍一下你自己                False 本地8B    None      None      False    ✅     89
+现在几点了                     True  mimo    None      None      True     ✅     46
+现在几点了                     True  本地8B    None      None      True     ✅     49
+时间怎么换算、时区怎么算              False mimo    None      None      False    ✅     442
+时间怎么换算、时区怎么算              False 本地8B    None      True      True     ❌     99
+两车相向而行                    True  mimo    None      None      True     ✅     367
+两车相向而行                    True  本地8B    None      None      True     ✅     130
+加盐提浓度                     True  mimo    None      None      True     ✅     324
+加盐提浓度                     True  本地8B    None      None      True     ✅     303
+帮我看看还有多少空间                True  mimo    None      None      True     ✅     90
+帮我看看还有多少空间                True  本地8B    None      None      True     ✅     87
+空间不足会怎样                   False mimo    None      None      False    ✅     185
+空间不足会怎样                   False 本地8B    None      None      False    ✅     112
+0.1+0.2 的精确值              True  mimo    None      None      True     ✅     67
+0.1+0.2 的精确值              True  本地8B    None      None      True     ✅     288
+123456789 乘 987654321 等于多少True  mimo    None      None      True     ✅     183
+123456789 乘 987654321 等于多少True  本地8B    None      None      True     ✅     161
+15% 折扣后多少钱                True  mimo    None      None      True     ✅     131
+15% 折扣后多少钱                True  本地8B    None      None      True     ✅     178
+求 2x+3=7 的解               True  mimo    None      None      True     ✅     98
+求 2x+3=7 的解               True  本地8B    None      None      True     ✅     175
+解释一下什么是导数                 False mimo    None      None      False    ✅     570
+解释一下什么是导数                 False 本地8B    None      None      False    ✅     135
+帮我写个求两数之和的函数              False mimo    None      None      False    ✅     366
+帮我写个求两数之和的函数              False 本地8B    None      None      False    ✅     77
+
+====================================================================================================
+还原率（分母 = 全部发数；① 是「先抠 JSON」能救回多少，②③ 是在它之后再加层的收益）
+====================================================================================================
+① 只抠 JSON        : 0/56  = 0%
+①+② 再加关键词层   : 0/56  = 0%
+①+②+③ 再加模型翻译 : 49/56  = 87%
+（对照：同一批题上，清单式原样 = 56/56）
+
+仍翻错的 7 发：
+  [mimo] '日志里最近报了啥错' 期望=True ①None ②None ③None · 翻译件
+  [mimo] '这套系统的清洗怎么跑' 期望=True ①None ②None ③None · 翻译件
+  [本地8B] 'linux 的 inode 是什么意思' 期望=False ①None ②True ③True · —
+  [本地8B] '清洗是什么' 期望=False ①None ②True ③True · —
+  [mimo] 'systemd 怎么建个服务' 期望=False ①None ②True ③True · —
+  [本地8B] '帮我把这句话翻成英文' 期望=False ①None ②None ③True · 翻译件
+  [本地8B] '时间怎么换算、时区怎么算' 期望=False ①None ②True ③True · —
+
+训练数据原料（每题原文都在 jsonl 里，含 期望/三级结果）: /home/lou/桌面/collaplex_agent/logs/对照-翻译件-现行-说话-20261013.jsonl

@@ -1,0 +1,41 @@
+{
+  "name": "mtp",
+  "version": "1.0.0",
+  "description": "交叉验证：同一题问两家以上不同模型，并排给出答案 + 挑出分歧，交给小模型自己综合。只在外援之后用。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "commands": [
+    {
+      "name": "ask",
+      "file": "scripts/panel.py",
+      "usage": "ask \"<题>\" [--家 deepseek,mimo] [--强制] [--安静]",
+      "note": "并行问几家，出参考材料（各家答案 + 程序判出的一致/分歧）；受开关与日预算约束"
+    },
+    {
+      "name": "status",
+      "file": "scripts/status.py",
+      "usage": "status [--json]",
+      "note": "看开关 / 用哪几家 / 今天花了多少（钱袋子沿用 outsource）"
+    }
+  ],
+  "needs": {
+    "config": "resources/mtp.json",
+    "shared_money": "skill/outsource/resources/outsource.json",
+    "env": [
+      "DEEPSEEK_API_KEY",
+      "DEEPSEEK_BASE_URL",
+      "MIMO_API_KEY",
+      "MIMO_BASE_URL"
+    ]
+  },
+  "upstream": {
+    "outsource": "外援（一级手段）：卡住了先摇一家；这家搞不定才轮到 mtp"
+  },
+  "io": {
+    "read_only": false,
+    "writes": [
+      "logs/mtp/（参考材料 .md）",
+      "logs/outsource/用量.jsonl（共用记账，行上标 来自=mtp）"
+    ]
+  }
+}

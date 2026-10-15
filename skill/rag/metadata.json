@@ -1,0 +1,75 @@
+{
+  "name": "rag",
+  "version": "1.0.0",
+  "description": "资料检索：查询进，原文片段出。只读。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "commands": [
+    {
+      "name": "recall",
+      "file": "scripts/recall.py",
+      "usage": "recall \"<查询>\" [-n 5] [--json] [--tier 2|3]",
+      "note": "两级检索（二层热 RAG -> 三层冷 RAG），默认入口；每层走 纯向量 + 别名路"
+    },
+    {
+      "name": "search",
+      "file": "scripts/search.py",
+      "usage": "search \"<查询>\" [-n 5] [--json] [--tier 2|3]",
+      "note": "单层检索，默认二层；走 纯向量 + 别名路"
+    },
+    {
+      "name": "embed",
+      "file": "scripts/embed.py",
+      "usage": "embed <文件或目录> ... [--tier 2|3]",
+      "note": "切片转向量，建库；--tier 3 写冷库"
+    },
+    {
+      "name": "chunk",
+      "file": "scripts/chunker.py",
+      "usage": "chunk <文件>",
+      "note": "切片预览"
+    },
+    {
+      "name": "refine",
+      "file": "scripts/refine.py",
+      "usage": "refine.py [--看守|--干跑|--安静] [--间隔 秒]",
+      "note": "清洗管线: 二层对话产出 -> 复制进三层 -> 概述/知识/别名 -> 清掉二层那批"
+    }
+  ],
+  "needs": {
+    "env": [
+      "EMBEDDING_BASE_URL",
+      "EMBEDDING_MODEL"
+    ],
+    "config": "resources/embed.json",
+    "service": {
+      "script": "scripts/embed_server.sh",
+      "port_from": "EMBEDDING_BASE_URL",
+      "model": "Qwen3-Embedding-0.6B-Q8_0.gguf"
+    }
+  },
+  "tiers": {
+    "2": {
+      "role": "热 RAG（原始未清洗，已向量）",
+      "index": "scripts/vector-index.json"
+    },
+    "3": {
+      "role": "冷 RAG（完整记忆与知识）",
+      "index": "scripts/memory-index.json"
+    }
+  },
+  "index_schema": {
+    "fields": [
+      "index",
+      "vector",
+      "text",
+      "hash",
+      "source"
+    ],
+    "note": "source = 源文件（相对项目根）；累积模式按 source 做替换，改过的文件不留旧切片"
+  },
+  "io": {
+    "read_only": true,
+    "writes": []
+  }
+}

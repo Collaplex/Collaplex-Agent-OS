@@ -1,0 +1,5 @@
+{
+  "tokenizer_path": "~/models/deepseek-v4-tokenizer/tokenizer.json",
+  "single_user_message_overhead": 4,
+  "note": "DeepSeek V4 官方 tokenizer(老板给的 deepseek_v4_tokenizer.zip 解出来那份, md5 da204a8e73ef8774bbb02c09ed547400)。本地数的 token 数 + single_user_message_overhead 就是 API 报的 prompt_tokens(单条 user 消息实测). 换别家模型要换这份词表, 并重跑 tests/test_tokenizer.py 里的对拍真值. 环境变量 COLLAPLEX_TOKENIZER_JSON 可临时覆盖此路径."
+}

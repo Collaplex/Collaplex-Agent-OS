@@ -1,0 +1,51 @@
+{
+  "name": "linux",
+  "version": "1.0.0",
+  "description": "本机操作：看这台 Linux 机器的实际情况（磁盘/内存/进程/端口/服务/日志），也真动手替用户做（删文件/清空间/起停服务/建目录/改文件/装包）；命令先查命令库再真跑。",
+  "entry": "main.py",
+  "runtime": ".venv/bin/python",
+  "commands": [
+    {
+      "name": "find",
+      "file": "scripts/retrieve.py",
+      "usage": "find \"<一句话>\" [-n 3] [--mode vector|rrf|weight] [--index <索引路径>]",
+      "note": "查命令库：给一句话，返回「出处 + 分 + 条目全文（用途/用法/常用选项/示例/备注）」"
+    },
+    {
+      "name": "index",
+      "file": "scripts/retrieve.py",
+      "usage": "index",
+      "note": "建/更新命令库索引（按 hash 复用向量，只重算改过的条目）"
+    }
+  ],
+  "briefing": {
+    "command": "find",
+    "query_from": "用户原话",
+    "top_k": 3,
+    "note": "★ 程序在递交 exec **之前**先跑这条，把条目全文贴进任务里 —— 检索是确定性的（该查什么由声明决定），不靠模型自发去查。模型只保留「条目不对路时自己再查一次」的自愈口子"
+  },
+  "needs": {
+    "env": ["EMBEDDING_BASE_URL", "EMBEDDING_MODEL"],
+    "config": "../rag/resources/embed.json（借 rag 的切片/嵌入参数）",
+    "service": {
+      "script": "../rag/scripts/embed_server.sh",
+      "port_from": "EMBEDDING_BASE_URL",
+      "note": "跟 rag / skill_search 共用同一个向量服务"
+    }
+  },
+  "corpus": {
+    "kind": "command-docs",
+    "root": "commands/",
+    "pattern": "一个命令一个 md：`## 命令名 · 中文用途` → 用途 / 用法 / 常用选项（照本机 --help 抄）/ 示例 / 备注",
+    "unit": "一片一条（一条命令正好 1 片）"
+  },
+  "index": "commands-index.json",
+  "index_schema": {
+    "fields": ["index", "vector", "text", "hash", "source"],
+    "note": "source = commands/<命令>.md；检索件是 scripts/retrieve.py（倒排缓存在 cache/，不进 git）"
+  },
+  "io": {
+    "find": "只读",
+    "index": "按 hash 复用向量，只重算新增/改过的条目"
+  }
+}

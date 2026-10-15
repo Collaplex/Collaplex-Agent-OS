@@ -1,0 +1,27 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.extraPaths": [
+    "skill/rag/scripts",
+    "skill/skill_search/scripts",
+    "skill/linux/scripts",
+    "skill/file/scripts",
+    "skill/math/scripts",
+    "skill/search/scripts",
+    "skill/vision/scripts",
+    "skill/outsource/scripts",
+    "skill/mtp/scripts"
+  ],
+  "python.analysis.exclude": [
+    "**/.venv",
+    "**/__pycache__",
+    "**/_deprecated",
+    "**/cache",
+    "dist",
+    "build-nuitka",
+    "logs",
+    ".backup",
+    "state"
+  ]
+}

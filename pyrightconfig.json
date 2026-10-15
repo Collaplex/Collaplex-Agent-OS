@@ -1,0 +1,69 @@
+{
+  "include": [
+    "main.py",
+    "定时.py",
+    "作业.py",
+    "sub_agent.py",
+    "exec_agent.py",
+    "native_marks.py",
+    "解析器",
+    "tokenizer.py",
+    "算token.py",
+    "selfcheck.py",
+    "outsource_hook.py",
+    "cli.py",
+    "watchdog.py",
+    "mvp_os.py",
+    "web",
+    "tests",
+    "diagrams",
+    "skill"
+  ],
+  "exclude": [
+    "**/.venv",
+    "**/__pycache__",
+    "**/_deprecated",
+    "**/cache",
+    "dist",
+    "build-nuitka",
+    "logs",
+    "web/tests",
+    ".backup",
+    "state"
+  ],
+  "typeCheckingMode": "strict",
+  "extraPaths": [
+    "web",
+    "skill/vision/scripts",
+    "skill/rag/scripts",
+    "skill/skill_search/scripts",
+    "skill/linux/scripts",
+  "skill/linux/tests",
+    "skill/file/scripts",
+    "skill/outsource/scripts",
+    "skill/mtp/scripts",
+    "skill/math/scripts",
+    "skill/ops/scripts",
+    "skill/search/scripts",
+    "skill/timer/scripts"
+  ],
+  "executionEnvironments": [
+    {
+      "root": "skill/math/scripts",
+      "extraPaths": [
+        "skill/math/scripts",
+        "skill/rag/scripts"
+      ]
+    },
+    {
+      "root": "skill/vision/scripts",
+      "extraPaths": [
+        "skill/vision/scripts",
+        "skill/rag/scripts"
+      ]
+    }
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.14"
+}

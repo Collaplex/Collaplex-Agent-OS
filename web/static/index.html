@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collaplex Agent OS</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/vendor/katex/katex.min.css">
+<link rel="stylesheet" href="/vendor/hljs-tokyo-night-dark.css">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<aside class="侧栏">
+  <div class="品牌">
+    <img class="标" src="/favicon.svg" alt="Collaplex">
+    <span class="名">Collaplex Agent OS</span>
+  </div>
+  <div class="栏题">历史记录</div>
+  <div class="历史" id="历史"><div class="史空">还没有记录</div></div>
+  <div class="侧底">
+    <button class="栏钮" id="设置钮" type="button">设置</button>
+  </div>
+</aside>
+
+<div class="主区">
+  <header class="顶栏">
+    <button class="收栏钮" id="收栏钮" type="button" title="收起/展开侧栏（Ctrl+B）" aria-label="收起侧栏">☰</button>
+    <span class="页眉" id="页眉">对话</span>
+    <div class="右">
+      <span class="点" id="服务灯" title="端点状态"></span>
+      <span class="灰" id="模型名">…</span>
+      <span class="灰" id="统计"></span>
+    </div>
+  </header>
+
+  <main class="对话区" id="对话区">
+    <div class="更早" id="哨兵"></div>
+    <div id="流"></div>
+    <div class="空态" id="空态">
+      <p class="灰">子 agent 判定 → 挑 skill → exec agent 真跑命令 / 主 agent 自答。过程全程可见。</p>
+      <div class="示例">
+        <button type="button" data-问="算一下 12345 乘 6789 等于多少">算个数（走 math skill 真算）</button>
+        <button type="button" data-问="本机磁盘还剩多少空间？">看本机磁盘</button>
+        <button type="button" data-问="用 markdown 给我一份《本地 agent 的取舍》短文：要有三级标题、一个三列对比表格、一段 python 代码、一个块级公式">要一份富 markdown（试渲染）</button>
+      </div>
+    </div>
+  </main>
+
+  <section class="设置页" id="设置页" hidden></section>
+
+  <button id="到底" type="button" hidden>↓ 回到最新</button>
+
+  <footer class="底栏" id="底栏">
+    <section class="清单栏" id="清单栏" hidden></section>
+    <form id="问表">
+      <textarea id="问框" rows="1" placeholder="可提问，或派发任务…（Enter 发送 / Shift+Enter 换行）"></textarea>
+      <button id="导入钮" type="button" aria-label="导入本机文件或文件夹"
+              title="导入：选择本机文件 / 文件夹，把路径填进输入框（Ctrl+O）">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <button id="发送" type="submit">发送</button>
+    </form>
+    <div class="脚注灰">
+      <span id="状态行">就绪</span>
+      <span>此内容由ai生成可能会出现错误</span>
+    </div>
+  </footer>
+</div>
+
+<div class="拖提示" id="拖提示" aria-hidden="true">
+  <div class="盒">
+    松手 —— 路径直接填进输入框
+    <span class="小">文件 / 文件夹 / 从文件管理器或终端拖过来的路径都行</span>
+  </div>
+</div>
+
+<div class="路径罩" id="路径罩" hidden>
+  <div class="路径框" tabindex="-1">
+    <div class="路径头">
+      <span>选个文件或文件夹</span>
+      <button class="路径关" id="路径关" type="button" title="关掉（Esc）">✕</button>
+    </div>
+    <div class="路径条" id="路径条"></div>
+    <div class="路径单" id="路径单"></div>
+    <div class="路径脚">
+      <span class="路径灰" id="路径灰"></span>
+      <span class="路径钮们">
+        <button id="选这层" type="button">选当前这层</button>
+        <button id="路径消" type="button">取消</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<script src="/vendor/markdown-it.min.js"></script>
+<script src="/vendor/highlight.min.js"></script>
+<script src="/vendor/purify.min.js"></script>
+<script src="/vendor/katex/katex.min.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

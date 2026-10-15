@@ -1,0 +1,52 @@
+<mxfile host="65bd71144e">
+    <diagram id="6Cn1gfG-IWhcrmbUYai3" name="第 1 页">
+        <mxGraphModel dx="1056" dy="627" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-6" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-2">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-7" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-1" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-5">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="调用" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-13" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-2" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-11">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="等待多长时间后开始或者结束动作" vertex="1">
+                    <mxGeometry height="60" width="120" x="280" y="175" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="返回结果" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="585" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-10" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-4" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-3">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="执行动作" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="450" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-14" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-5" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-11">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="什么时间开始或者结束动作" vertex="1">
+                    <mxGeometry height="60" width="120" x="440" y="175" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-12" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-11" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="定时器线程" vertex="1">
+                    <mxGeometry height="60" width="120" x="354" y="270" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-16" edge="1" parent="1" source="jxFOghwpuVySyKJwBOaz-15" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="jxFOghwpuVySyKJwBOaz-11">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="jxFOghwpuVySyKJwBOaz-15" parent="1" style="rounded=1;whiteSpace=wrap;html=1;roundedPerimeter=1;" value="看门狗如果定时器里没有任务了就关掉" vertex="1">
+                    <mxGeometry height="60" width="120" x="160" y="270" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,22 @@
+{
+  "chrome": "/usr/bin/google-chrome",
+  "port": 9334,
+  "headless": true,
+  "window": [
+    1440,
+    900
+  ],
+  "idle_seconds": 300,
+  "watch_tick": 10,
+  "nav_timeout": 25,
+  "dom_grace_seconds": 3.0,
+  "settle_seconds": 2.5,
+  "max_html_bytes": 5242880,
+  "max_shot_height": 8000,
+  "min_text_chars": 200,
+  "shot_quality": 70,
+  "lang": "zh-CN",
+  "hide_webdriver": true,
+  "no_proxy": true,
+  "wipe_profile_on_stop": true
+}

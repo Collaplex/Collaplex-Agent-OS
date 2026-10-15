@@ -1,0 +1,81 @@
+{
+  "batch_size": 16,
+  "timeout": 300,
+  "retry": 3,
+  "vector_digits": 6,
+  "chunk_size": 800,
+  "mode": "accumulate",
+  "exclude_dirs": [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "_deprecated",
+    "node_modules",
+    ".mypy_cache",
+    ".pytest_cache",
+    "examples",
+    "tests"
+  ],
+  "exclude_files": [
+    "vector-index.json",
+    "memory-index.json"
+  ],
+  "on_unsupported": "refuse",
+  "allowed_exts": [
+    ".md",
+    ".markdown",
+    ".txt",
+    ".rst",
+    ".log",
+    ".csv",
+    ".py",
+    ".sh",
+    ".sql",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".ini",
+    ".conf",
+    ".cfg",
+    ".html",
+    ".htm",
+    ".css",
+    ".js",
+    ".ts"
+  ],
+  "tier": "2",
+  "tiers": {
+    "2": {
+      "name": "二层 · 热 RAG（原始未清洗，已向量）",
+      "output": "scripts/vector-index.json"
+    },
+    "3": {
+      "name": "三层 · 冷 RAG（完整记忆与知识）",
+      "output": "scripts/memory-index.json"
+    }
+  },
+  "store": {
+    "backend": "pg",
+    "pg": {
+      "dsn_env": "RAG_PG_DSN",
+      "table": "rag_chunks"
+    }
+  },
+  "hit_threshold": 0.53,
+  "semantic": {
+    "enabled": true,
+    "cut_zscore": 0.8,
+    "cut_threshold": 0.62,
+    "min_chunk_ratio": 0.35,
+    "max_chunk_ratio": 2.5,
+    "min_text_chars": 1600
+  },
+  "alias": {
+    "enabled": true,
+    "index": "scripts/alias.json",
+    "base_k": 3,
+    "max_aliases": 4,
+    "per_alias": 2
+  }
+}

@@ -1,0 +1,72 @@
+#!/usr/bin/make -f
+# Collaplex Agent OS —— 纯 Python 包(Architecture: all)
+#   /usr/share/collaplex-agent-os/  项目本体(源码未编译; 与 pack_bundle.sh 同一份口径)
+#   /usr/bin/collaplex-agent        入口(认 venv, 认不到退系统 python3)
+#   运行时 venv 由 postinst 建(python3 -m venv + pip 装那三个依赖), 不在包里
+PKG    := collaplex-agent-os
+DEST   := debian/$(PKG)
+TARGET := $(DEST)/usr/share/$(PKG)
+# ★ 交付形态: 默认源码树（.); 设了 SRC_TREE 就用那棵树 —— 字节码包是
+#   `SRC_TREE=dist/字节码树`（那棵树里 .py 全换成了 .pyc, 由 打包/字节码化.py 生成）。
+SRC_TREE ?= .
+
+%:
+	dh $@
+
+# 没有编译步骤, 也不让 dh 去猜构建系统
+override_dh_auto_configure:
+override_dh_auto_build:
+override_dh_auto_test:
+override_dh_auto_clean:
+
+override_dh_auto_install:
+	install -d $(TARGET)
+	# ★ 与 pack_bundle.sh 同一口径: 源码进包; 凭据 / 日志 / 状态 / 缓存 / 实验 / 构建产物不进包
+	#   多排除的两样是 deb 特有: ./debian(打包材料本身) 与 ./vendor(376M 的 llama.cpp 源码,
+	#   那是模型服务的事, 不属于本包)
+	tar -C $(SRC_TREE) -cf - \
+	  --exclude=./.venv --exclude=./.git --exclude=./debian --exclude=./dist \
+	  --exclude=./build-nuitka --exclude=./.env --exclude='./.env.bak-*' --exclude=./.backup \
+	  --exclude=./state --exclude=./logs --exclude='./$$日志' --exclude=./__pycache__ \
+	  --exclude='*.log' --exclude='*.log.*' \
+	  --exclude='*/__pycache__' --exclude=./vendor --exclude=./实验 --exclude=./diagrams \
+	  --exclude=./out --exclude='./skill/rag/corpus/*' --exclude='./skill/*/cache' \
+	  --exclude=./skill/search/logs --exclude=./skill/vision/logs \
+	  --exclude='./skill/vision/tests/样本' \
+	  --exclude='./skill/rag/scripts/_json-退役备份' \
+	  --exclude='*.crv' --exclude=.carve-backups --exclude='*.restored' \
+	  . | tar -C $(TARGET) -xf -
+	# 被排掉的空目录补回来(运行时挂 /var/lib, 见 postinst)
+	install -d $(TARGET)/skill/rag/corpus
+	# 入口命令 + 习惯用法名(repo 叫 collaplex-agent, 两个都认)
+	install -D -m 0755 debian/wrapper $(DEST)/usr/bin/$(PKG)
+	ln -sfn $(PKG) $(DEST)/usr/bin/collaplex-agent
+	# .env 模板: 只抄键名, 值一律留空 —— ★ 凭据不进包
+	if [ -f .env ]; then \
+	  grep -oE '^[A-Za-z_][A-Za-z0-9_]*=' .env | sed 's/$$/在这里填/' > $(TARGET)/.env.example || true; \
+	else \
+	  printf '%s\n' \
+	    'OPENAI_API_KEY=在这里填' 'OPENAI_BASE_URL=在这里填' 'OPENAI_MODEL=在这里填' \
+	    'EMBEDDING_BASE_URL=在这里填' 'EMBEDDING_MODEL=在这里填' \
+	    'DEEPSEEK_API_KEY=在这里填' 'DEEPSEEK_BASE_URL=在这里填' \
+	    'MIMO_API_KEY=在这里填' 'MIMO_BASE_URL=在这里填' \
+	    'EXEC_API_KEY=在这里填' 'EXEC_BASE_URL=在这里填' 'EXEC_MODEL=在这里填' \
+	    'SUBAGENT_API_KEY=在这里填' 'SUBAGENT_BASE_URL=在这里填' 'SUBAGENT_MODEL=在这里填' \
+	    'DEBUG=0' > $(TARGET)/.env.example; \
+	fi
+	# 版权与说明跟着包走
+	install -m 0644 LICENSE $(TARGET)/LICENSE 2>/dev/null || true
+	install -m 0644 README.md $(TARGET)/README.md 2>/dev/null || true
+	# 图标与桌面入口 —— 菜单栏里要有图标:
+	#   hicolor 四档 PNG(48/64/128/256) + 可缩放 SVG, 名字与 .desktop 里的 Icon= 同名。
+	install -d $(DEST)/usr/share/icons/hicolor/scalable/apps
+	install -m 0644 assets/icon.svg $(DEST)/usr/share/icons/hicolor/scalable/apps/$(PKG).svg
+	for s in 48 64 128 256; do \
+	  install -D -m 0644 assets/icon-$$s.png \
+	    $(DEST)/usr/share/icons/hicolor/$${s}x$${s}/apps/$(PKG).png; \
+	done
+	install -D -m 0644 debian/$(PKG).desktop \
+	  $(DEST)/usr/share/applications/$(PKG).desktop
+
+override_dh_missing:
+	dh_missing --list-missing

@@ -1,0 +1,30 @@
+{
+  "store": {
+    "backend": "pg",
+    "pg": {
+      "dsn_env": "RAG_PG_DSN",
+      "hot_table": "search_hot",
+      "corpus_table": "search_corpus"
+    }
+  },
+  "chunk_size": 800,
+  "vector_digits": 6,
+  "timeout": 300,
+  "retry": 3,
+  "batch_size": 16,
+  "embed_max_chars": 4000,
+  "hot_hours": 24,
+  "corpus_days": 90,
+  "corpus_max_mb": 2048,
+  "page_max_mb": 5,
+  "single_max_mb": 20,
+  "disk_max_mb": 2048,
+  "budget": {
+    "max_per_round": 100,
+    "round_gap_seconds": 1800,
+    "state": "cache/budget.json"
+  },
+  "shot_dir": "cache/shots",
+  "page_dir": "cache/pages",
+  "sink_keep_shot": false
+}

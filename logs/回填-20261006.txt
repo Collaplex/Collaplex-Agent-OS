@@ -1,0 +1,16 @@
+[2026-10-06 18:26:03] 回填 5 个半成品:
+    skill/rag/corpus/q-ca1903f3.md  (2 片)
+        概述 1 / 知识 1 / 别名 0
+    skill/rag/corpus/q-d17d0ae4.md  (7 片)
+        概述 1 / 知识 8 / 别名 7
+    skill/rag/corpus/q-d457aaee.md  (4 片)
+        概述 1 / 知识 5 / 别名 2
+    skill/rag/corpus/q-28eafa2d.md  (4 片)
+        概述 1 / 知识 5 / 别名 0
+    skill/rag/corpus/q-56ee0409.md  (5 片)
+[2026-10-06 18:41:38] 回填 1 个半成品:
+    skill/rag/corpus/q-56ee0409.md  (5 片)
+        挡掉 1 条不成立的: 内存条 -> 内存
+        概述 1 / 知识 3 / 别名 1
+
+回填完成: 概述 1 条 / 知识 3 条 / 别名 1 组

@@ -1,0 +1,226 @@
+import ast
+import os
+import re
+
+
+# ============================================================
+# 通用工具
+# ============================================================
+
+def _split_long_text(
+    text: str,
+    chunk_size: int = 800,
+    overlap_sentences: int = 1,
+) -> list[str]:
+    """兜底: 按句子切, 再合并成块, 块之间保留 1 句重叠。"""
+    if isinstance(chunk_size, bool) or chunk_size <= 0:
+        raise ValueError("chunk_size 必须为一个正整数")
+    if isinstance(overlap_sentences, bool) or overlap_sentences < 0:
+        raise ValueError("overlap_sentences 必须为非负整数")
+
+    sentences: list[str] = re.split(r'(?<=[。！？.!?])\s*', text)
+    sentences = [sentence.strip() for sentence in sentences if sentence.strip()]
+
+    if not sentences:
+        return [text] if text.strip() else []
+
+    chunks: list[str] = []
+    current: list[str] = []
+    current_len = 0
+
+    for sentence in sentences:
+        if current_len + len(sentence) > chunk_size and current:
+            chunks.append("".join(current))
+            if overlap_sentences > 0:
+                current = current[-overlap_sentences:]
+                current_len = sum(len(part) for part in current)
+            else:
+                current = []
+                current_len = 0
+        current.append(sentence)
+        current_len += len(sentence)
+
+    if current:
+        chunks.append("".join(current))
+    return chunks
+
+
+# ============================================================
+# Markdown 切片：按标题 + 代码块状态机
+# ============================================================
+
+def _split_markdown(text: str, chunk_size: int = 800) -> list[str]:
+    lines = text.splitlines(keepends=True)
+    chunks: list[str] = []
+
+    current_lines: list[str] = []
+    in_code_block = False
+    code_fence: str | None = None
+
+    def flush() -> None:
+        """把 current_lines 收成一个块, 太长就再切。"""
+        nonlocal current_lines
+        if not current_lines:
+            return
+        block = "".join(current_lines).strip()
+        current_lines = []
+        if not block:
+            return
+        if len(block) > chunk_size:
+            chunks.extend(_split_long_text(block, chunk_size))
+        else:
+            chunks.append(block)
+
+    for line in lines:
+        stripped = line.lstrip()
+
+        # ---------- 代码块状态 ----------
+        if not in_code_block:
+            if stripped.startswith("```") or stripped.startswith("~~~"):
+                flush()
+                in_code_block = True
+                code_fence = stripped[:3]
+                current_lines.append(line)
+                continue
+        else:
+            current_lines.append(line)
+            if code_fence is not None and stripped.startswith(code_fence):
+                block = "".join(current_lines).strip()
+                current_lines = []
+                in_code_block = False
+                code_fence = None
+                if block:
+                    chunks.append(block)
+            continue
+
+        # ---------- 标题状态 ----------
+        if stripped.startswith("#"):
+            flush()
+            current_lines.append(line)
+            continue
+
+        # ---------- 普通行 ----------
+        current_lines.append(line)
+
+    flush()
+    return chunks
+
+
+# ============================================================
+# Python 切片：按 def / class
+# ============================================================
+
+def _split_python(text: str, chunk_size: int = 800) -> list[str]:
+    try:
+        tree = ast.parse(text)
+    except SyntaxError:
+        return _split_text(text, chunk_size)
+
+    lines = text.splitlines()
+    chunks: list[str] = []
+
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+            start = node.lineno - 1
+            end = node.end_lineno
+            code = "\n".join(lines[start:end])
+            if len(code) > chunk_size:
+                chunks.extend(_split_long_text(code, chunk_size))
+            else:
+                chunks.append(code)
+
+    top_lines: list[str] = []
+    for i, line in enumerate(lines):
+        if any(
+            isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+            and node.end_lineno is not None
+            and node.lineno - 1 <= i < node.end_lineno
+            for node in tree.body
+        ):
+            continue
+        top_lines.append(line)
+    top_text = "\n".join(top_lines).strip()
+    if top_text:
+        chunks.insert(0, top_text)
+
+    return chunks
+
+
+# ============================================================
+# 纯文本切片：段落 + 句子
+# ============================================================
+
+def _split_text(text: str, chunk_size: int = 800) -> list[str]:
+    paragraphs = re.split(r'\n\s*\n', text)
+    chunks: list[str] = []
+    current = ""
+
+    for paragraph in paragraphs:
+        para = paragraph.strip()
+        if not para:
+            continue
+
+        if len(current) + len(para) + 2 <= chunk_size:
+            current = (current + "\n\n" + para) if current else para
+        else:
+            if current:
+                chunks.append(current)
+            if len(para) > chunk_size:
+                chunks.extend(_split_long_text(para, chunk_size))
+                current = ""
+            else:
+                current = para
+
+    if current:
+        chunks.append(current)
+
+    return chunks
+
+
+# ============================================================
+# 入口：根据后缀路由
+# ============================================================
+
+def split_file(filepath: str, chunk_size: int = 800) -> list[str]:
+    """
+    读取文件, 根据后缀选择切片算法, 返回字符串列表。
+
+    参数:
+        filepath:   文件路径
+        chunk_size: 目标块大小 (字符数, 默认 800)
+
+    返回:
+        list[str], 每个元素是一个切片
+    """
+    if isinstance(chunk_size, bool) or chunk_size <= 0:
+        raise ValueError("chunk_size 必须为一个正整数")
+    if not os.path.isfile(filepath):
+        raise FileNotFoundError(f"文件不存在: {filepath}")
+
+    ext = os.path.splitext(filepath)[1].lower()
+
+    with open(filepath, "r", encoding="utf-8") as file:
+        text = file.read()
+
+    if ext in (".md", ".markdown"):
+        return _split_markdown(text, chunk_size)
+    if ext == ".py":
+        return _split_python(text, chunk_size)
+    if ext in (".txt", ".log", ".rst", ".csv"):
+        return _split_text(text, chunk_size)
+
+    return _split_text(text, chunk_size)
+
+
+def main():
+    chunks = split_file("skill/seek/Skill.md")
+
+    print(f"一共 {len(chunks)} 块")
+    for i, c in enumerate(chunks):
+        print(f"--- 第 {i} 块 ---")
+        print(c[:100])   # 只打印前 100 字看看
+        print()
+
+
+if __name__ == "__main__":
+    main()

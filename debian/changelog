@@ -1,0 +1,101 @@
+collaplex-agent-os (0.3.0) unstable; urgency=medium
+
+  * 交付形态可选「字节码包」: 打 deb 时带 SRC_TREE=dist/字节码树, 整棵树的 .py 全换成 .pyc
+    （打包/字节码化.py 生成, 打完自我验证: 自检 + 真检索 + 算数）。源码形态照旧。
+  * 代码侧改成「对形态不敏感」: 新增 件定位.py —— 入口与自检按名字找实现件时,
+    源码(.py) / 字节码(.pyc, 含 __pycache__) / 编译件(.so) 三种形态都认。
+    之前写死 (SCRIPTS / "retrieve.py").is_file() 的地方, 在字节码包里会假报「件不在」。
+  * selfcheck 的「入口都能编译」改成「入口都在」: 遇到 .pyc 就核对魔数
+    （能当场抓出「这份包是别的 Python 小版本编的」）, 遇到 .py 才真去编译。
+  * ★ 字节码跟着 CPython 小版本走, 所以 Depends 收到 python3 (>= 3.14)。
+  * debian/wrapper 认 cli.py / cli.pyc 两形态; debian/rules 新增 SRC_TREE 开关。
+  * 新增 打包/ 目录: 字节码化.py · 适配字节码.py · 对照-源码vs字节码.py · 打deb.sh
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Wed, 14 Oct 2026 20:56:26 +0800
+
+collaplex-agent-os (0.2.0) unstable; urgency=medium
+
+  * 菜单栏里有图标了: assets/ 收品牌图标(站点的 favicon.svg + 由它渲染的 48/64/128/256 PNG),
+    rules 装进 hicolor 图标主题, 并装 /usr/share/applications/collaplex-agent-os.desktop
+    (Icon=collaplex-agent-os, Exec=collaplex-agent-os web —— 点一下起网页面板),
+    postinst 刷图标/桌面库缓存。装完应用列表里就是「Collaplex Agent OS」带图标。
+  * (本条以上与 0.1.9 相同) start_models.sh: 自己去配置里取 COLLAPLEX_MODELS —— 「模型 start」
+    那条路径(cli → web/启动.py 管模型)不经过 load_dotenv, 子进程里没有这个变量, 镜像里就会
+    去 /home/lou/models 找模型而起不来; 模型目录可覆盖, 默认仍是 /home/lou/models
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Sun, 11 Oct 2026 20:50:00 +0800
+
+collaplex-agent-os (0.1.9) unstable; urgency=medium
+
+  * start_models.sh: 自己去配置里取 COLLAPLEX_MODELS —— 「模型 start」那条路径
+    (cli → web/启动.py 管模型) 不经过 load_dotenv, 子进程里没有这个变量,
+    镜像里就会去 /home/lou/models 找模型而起不来
+  * (本条以上与 0.1.8 相同) 模型目录可覆盖, 默认仍是 /home/lou/models
+
+ -- lou <lou@localhost>  Sat, 10 Oct 2026 21:20:00 +0800
+
+collaplex-agent-os (0.1.8) unstable; urgency=medium
+
+  * start_models.sh: 模型目录改成可覆盖(COLLAPLEX_MODELS), 默认仍是 /home/lou/models;
+    做整机镜像时指到镜像内的路径, 免得镜像里还得有个 /home/lou
+
+ -- lou <lou@localhost>  Sat, 10 Oct 2026 21:10:00 +0800
+
+collaplex-agent-os (0.1.7) unstable; urgency=medium
+
+  * rules/tar 补 *.log —— 0.1.5/0.1.6 都把本机的 15M embed-server.log 带进去了
+
+ -- lou <lou@localhost>  Sat, 10 Oct 2026 20:25:00 +0800
+
+collaplex-agent-os (0.1.6) unstable; urgency=medium
+
+  * ★ 排除 *.log: 0.1.5 把本机跑出来的 15M embed-server.log 打进包了
+
+ -- lou <lou@localhost>  Sat, 10 Oct 2026 20:20:00 +0800
+
+collaplex-agent-os (0.1.5) unstable; urgency=medium
+
+  * postinst 提示补「首次部署三件事」(pgvector / 空库建表 / 外援 key)
+
+ -- lou <lou@localhost>  Sat, 10 Oct 2026 20:30:00 +0800
+
+collaplex-agent-os (0.1.4) unstable; urgency=medium
+
+  * requirements.txt 再补 websocket-client: skill/search 的浏览器探针要用, 自检点名。
+  * 退役的 JSON 索引备份(_json-退役备份/, 11M)不再打进包 —— 数据已迁 PostgreSQL。
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Sat, 10 Oct 2026 21:35:00 +0800
+
+collaplex-agent-os (0.1.3) unstable; urgency=medium
+
+  * 字节码缓存重定向到 /var/lib/<pkg>/pycache(PYTHONPYCACHEPREFIX):
+    自检的 py_compile 会往源码树的 __pycache__ 写, 系统安装的树是 root 只读 →
+    普通用户跑必 PermissionError。改了以后 /usr/share 保持干净、导入还更快。
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Sat, 10 Oct 2026 21:20:00 +0800
+
+collaplex-agent-os (0.1.2) unstable; urgency=medium
+
+  * /etc/<pkg>/env 交给装包的用户(0600): 之前留 root 0600, 普通用户跑起来读不到
+    .env 直接 PermissionError(干净机实测)。
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Sat, 10 Oct 2026 21:05:00 +0800
+
+collaplex-agent-os (0.1.1) unstable; urgency=medium
+
+  * 补 requirements.txt 漏登记的 psycopg[binary] —— 干净机上装完跑自检直接
+    ModuleNotFoundError(库.py 顶层 import psycopg), 属硬依赖; 解压即用包同病已修。
+  * websocket-client 标注为测试依赖, 不进运行时。
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Sat, 10 Oct 2026 20:45:00 +0800
+
+collaplex-agent-os (0.1.0) unstable; urgency=medium
+
+  * 首个 deb 包: 项目本体 + 10 个 skill + web 前端进 /usr/share/collaplex-agent-os,
+    运行时 venv 由 postinst 建(不随包分发, 不污染系统 python)。
+  * 入口 collaplex-agent(兼容 collaplex-agent-os): web / 自检 / 模型 start|stop|status / chat。
+  * 凭据不进包: 只发 .env.example(键名); /etc/collaplex-agent-os/env 存实际配置(模式 600)。
+  * 状态/记忆/日志/缓存挂到 /var/lib/collaplex-agent-os, 升级不丢。
+  * 装完不启动任何服务、不写用户配置 —— 要跑自己跑那条命令。
+
+ -- Collaplex Studio <edgevoid@collaplex.me>  Sat, 10 Oct 2026 20:20:00 +0800

@@ -1,0 +1,105 @@
+# rag 检索质量回归用例
+# 跑法与判定标准见同目录 test_cases.md
+# 基线: 2026-10-05, 二层库 375 条, Qwen3-Embedding-0.6B-Q8_0, 阈值 0.53
+# 语料一变基线就变, 这些都是参照值不是硬阈值
+
+threshold: 0.53
+corpus: scripts/vector-index.json
+
+cases:
+  # ---------- 该命中（二层库里确实有） ----------
+  - id: hit-01
+    query: "上下文窗口怎么管理"
+    expect: hit
+    tier: "2"
+    baseline: 0.6560
+    top_source: diagrams/summary.md
+
+  - id: hit-02
+    query: "切片怎么处理代码块"
+    expect: hit
+    tier: "2"
+    baseline: 0.6210
+    top_source: skill/rag/scripts/chunker.py
+
+  - id: hit-03
+    query: "事务边界为什么要先校验"
+    expect: hit
+    tier: "2"
+    baseline: 0.6736
+    top_source: diagrams/architecture.md
+
+  - id: hit-04
+    query: "驱动基类的接口长什么样"
+    expect: hit
+    tier: "2"
+    baseline: 0.7693
+    top_source: diagrams/design.md
+
+  - id: hit-05
+    query: "为什么不用纯 JSON"
+    expect: hit
+    tier: "2"
+    baseline: 0.6713
+    top_source: diagrams/1.txt
+
+  - id: hit-06
+    query: "交付 skill 的标准格式是什么"
+    expect: hit
+    tier: "2"
+    baseline: 0.5599   # 最贴边的一条, 相关侧最低
+    top_source: skill/seek/SKILL.md
+
+  # ---------- 该不命中（通用常识，库里没有） ----------
+  - id: miss-01
+    query: "红烧肉怎么做才好吃"
+    expect: miss
+    tier: null
+    baseline: 0.3324
+
+  - id: miss-02
+    query: "今天天气怎么样"
+    expect: miss
+    tier: null
+    baseline: 0.4983   # 最贴边的一条, 无关侧最高
+
+  - id: miss-03
+    query: "如何训练一只猫用猫砂"
+    expect: miss
+    tier: null
+    baseline: 0.3518
+
+  - id: miss-04
+    query: "显卡驱动怎么安装"
+    expect: miss
+    tier: null
+    baseline: 0.4781
+
+  - id: miss-05
+    query: "推荐几首好听的歌"
+    expect: miss
+    tier: null
+    baseline: 0.4003
+
+  - id: miss-06
+    query: "感冒了吃什么药"
+    expect: miss
+    tier: null
+    baseline: 0.4291
+
+# ---------- 冷库回退（需要三层库里有货才跑） ----------
+# 三层库现在只有一条样本。要验"二层不命中 -> 落三层"这条链路, 先给冷库灌一条
+# 二层一定没有的东西, 再查它:
+#
+#   .venv/bin/python skill/rag/main.py embed <某个知识目录> --tier 3
+#   .venv/bin/python skill/rag/main.py recall "<只在那目录里有的问题>" -n 1 --json
+#
+# 期望: 二层 hit=false, 三层 hit=true。
+# 注意别拿 examples/ 里的查询词当探针 —— 那些词原样写在样例文件里,
+# 一旦被索进语料就会自证命中 (examples/ 和 tests/ 已加进 exclude_dirs 规避)。
+
+# ---------- 阈值怎么重标 ----------
+# 两侧余量只有 ±0.03, 换模型或语料规模大变后必须重标:
+#   1. 取 6 条"库里确实有"的问题 + 6 条"库里没有"的问题
+#   2. 各自跑 recall -n 1 --json, 记下 score
+#   3. 阈值 = (相关最低 + 无关最高) / 2, 两侧余量要 > 0.03 否则样本不够
