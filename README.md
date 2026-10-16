@@ -8,7 +8,7 @@
 
 Collaplex Agent OS is a local-first agent runtime for real machine work. It reads the actual state of the machine and the material you point it at, decides what has to be done, hands the doing to tool-bearing executors, and brings the output and the exit code back unchanged. Every step is visible while it runs, and every figure in an answer can be traced to the command output it came from.
 
-Repository: [Collaplex/Collaplex-Agnet-OS](https://github.com/Collaplex/Collaplex-Agnet-OS) · CLI: `collaplex-agent` · Landing page: [collaplex.me/agent.html](https://collaplex.me/agent.html)
+Repository: [Collaplex/Collaplex-Agent-OS](https://github.com/Collaplex/Collaplex-Agent-OS) · CLI: `collaplex-agent` · Landing page: [collaplex.me/agent.html](https://collaplex.me/agent.html)
 
 ---
 
@@ -113,7 +113,7 @@ Direct runtime dependencies are deliberately few — `openai`, `python-dotenv`, 
 ## Install
 
 ```bash
-git clone https://github.com/Collaplex/Collaplex-Agnet-OS.git
+git clone https://github.com/Collaplex/Collaplex-Agent-OS.git
 cd collaplex-agent
 uv venv && uv pip install -r requirements.txt
 cp .env.example .env          # then edit .env
@@ -224,7 +224,7 @@ AGPL-3.0 lets you use, study, modify and redistribute this software, including a
 
 ## Links
 
-- Source, issues and releases: <https://github.com/Collaplex/Collaplex-Agnet-OS>
+- Source, issues and releases: <https://github.com/Collaplex/Collaplex-Agent-OS>
 - Landing page: <https://collaplex.me/agent.html>
 - Project site: <https://collaplex.me>
 - 中文文档（含完整架构设计）: [docs/README.zh.md](docs/README.zh.md)
