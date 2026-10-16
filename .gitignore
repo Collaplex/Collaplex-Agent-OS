@@ -70,3 +70,11 @@ vendor/llama.cpp/ggml/src/ggml-cuda/*.o
 /debian/files
 /debian/debhelper-build-stamp
 /dist/
+
+# skill 的派生数据不进官仓（索引/别名库/缓存/历史备份）—— 本地文件照旧留着
+# 重建：PY skill/<名>/scripts/retrieve.py index   ·   路由索引：PY skill/skill_search/scripts/index_skills.py
+skill/*/commands-index.json
+skill/*/cache/
+skill/skill_search/scripts/skill-index.json
+skill/rag/scripts/alias.json
+skill/rag/scripts/_json-retired-backup/

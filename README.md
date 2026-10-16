@@ -187,6 +187,13 @@ In the web interface you can ask a question or dispatch a task. Answers arrive n
 
 To add one: create a directory under `skill/`, write `SKILL.md` for the model and `metadata.json` for the program, put the corpus inside, then rebuild the index.
 
+Derived data is **not** shipped in the public repository: the per-skill retrieval indexes (`commands-index.json`), the skill-routing index, the alias dictionary and the caches are all build artifacts. Build them locally after cloning:
+
+```bash
+PY skill/linux/scripts/retrieve.py index    # any skill that carries a command library
+PY skill/skill_search/main.py index         # routing index across all skills
+```
+
 ---
 
 ## Repository layout
